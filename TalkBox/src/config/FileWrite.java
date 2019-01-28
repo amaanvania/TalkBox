@@ -19,7 +19,7 @@ public class FileWrite {
 	}
 	
 	public static void fileCreate(String filename,String msg) throws IOException{
-		FileWriter fw = new FileWriter(new File(filename + ".txt"),true);
+		FileWriter fw = new FileWriter(new File("src/resources/" + filename + ".txt"),true);
 		fw.write(msg);
 		fw.close();
 	}
