@@ -1,7 +1,9 @@
 package config;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.net.URI;
 
 import javafx.application.Application;
 import javafx.event.ActionEvent;
@@ -14,9 +16,12 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.ToolBar;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
 import javafx.stage.Stage;
 
 public class Builder extends Application{
@@ -120,6 +125,15 @@ public class Builder extends Application{
 									iv1.setPreserveRatio(true);
 									iv1.setSmooth(true);
 									iv1.setCache(true);
+									File f = new File(Utilities.AudioPath);
+									URI u = f.toURI();
+									Media sound = new Media(u.toString());
+									MediaPlayer mediaPlayer = new MediaPlayer(sound);
+									iv1.setOnMouseClicked(new EventHandler<MouseEvent>() {
+									    public void handle(MouseEvent me) {
+									        mediaPlayer.play();
+									    }
+									});
 								} catch (FileNotFoundException e1) {
 									// TODO Auto-generated catch block
 									e1.printStackTrace();

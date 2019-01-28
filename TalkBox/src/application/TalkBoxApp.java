@@ -3,13 +3,17 @@ package application;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.net.URI;
 
 import config.AudioButton;
+import javafx.event.EventHandler;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
 
 public class TalkBoxApp{
 	
@@ -19,8 +23,9 @@ public class TalkBoxApp{
 	GridPane gridpane;
 	
 	public TalkBoxApp(File file) throws IOException{
-		names = new String[10];
-		images = new Image[10];
+		names = new String[50];
+		images = new Image[50];
+		audioFiles = new Media[50];
 		Parser p = new Parser(file);
 		gridpane = new GridPane();
 		gridpane.setPrefSize(500, 500);
@@ -32,6 +37,11 @@ public class TalkBoxApp{
 				increment++;
 			}
 			AudioButton b = p.buttons[i];
+			File f = new File(b.getAudioPath());
+			URI u = f.toURI();
+			Media sound = new Media(u.toString());
+			audioFiles[i] = sound;
+			MediaPlayer mediaPlayer = new MediaPlayer(sound);
 			names[i] = b.getName();
 			TextField textField = new TextField();
 			textField.setText(b.getName());
@@ -42,6 +52,11 @@ public class TalkBoxApp{
 			iv1.setPreserveRatio(true);
 			iv1.setSmooth(true);
 			iv1.setCache(true);
+			iv1.setOnMouseClicked(new EventHandler<MouseEvent>() {
+			    public void handle(MouseEvent me) {
+			        mediaPlayer.play();
+			    }
+			});
 			GridPane.setConstraints(textField, i % 6, 2 + 2 * increment);
 			GridPane.setConstraints(iv1, i % 6, 1 + 2 * increment);
 			gridpane.getChildren().addAll(iv1,textField);

@@ -3,6 +3,8 @@ package application;
 import java.io.File;
 import java.io.IOException;
 
+import config.FileWrite;
+import config.Utilities;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.layout.GridPane;
@@ -12,8 +14,7 @@ public class TalkBoxBuilder extends Application{
 
 	public static void main(String[] args) throws IOException {
 		launch(args);
-		//TalkBoxApp a = new TalkBoxApp(new File("C:\\Users\\EliteBook 8540w\\Desktop\\configFile.txt"));
-		//System.out.println(a.getNames()[0]);
+
 		
 
 	}
@@ -21,8 +22,9 @@ public class TalkBoxBuilder extends Application{
 	@Override
 	public void start(Stage primaryStage) throws Exception {
 		// TODO Auto-generated method stub
-		TalkBoxApp a = new TalkBoxApp(new File("C:\\Users\\EliteBook 8540w\\Desktop\\configFile.txt"));
+		TalkBoxApp a = new TalkBoxApp(new File(Utilities.fileChoose(primaryStage)));
 		GridPane b = a.gridpane;
+		primaryStage.setTitle("TalkBox Application");
 		primaryStage.setScene(new Scene(b));
 		primaryStage.show();
 		

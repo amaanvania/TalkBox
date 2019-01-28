@@ -14,7 +14,7 @@ public class Parser {
 	public int numButtons;
 
 	public Parser(File file) throws IOException {
-		buttons = new AudioButton[10];
+		buttons = new AudioButton[100];
 		BufferedReader bufRead = new BufferedReader(new FileReader(file));
 		String myLine = null;
 		List<String[]> arrayList = new ArrayList<>();
@@ -26,7 +26,7 @@ public class Parser {
 		numButtons = Integer.parseInt(arrayList.get(0)[0]);
 		int lineNum = 0;
 		String combinedString = "";
-		String[] lines = new String[10];
+		String[] lines = new String[numButtons * 3 + 10];
 		for (String[] currLine : arrayList) {
 			for (String currString : currLine) {
 				combinedString += currString;
