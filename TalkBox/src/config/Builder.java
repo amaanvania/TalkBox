@@ -87,7 +87,7 @@ public class Builder extends Application{
 		gridpane.setPrefSize(500, 500);
 		gridpane.setVgap(10);
 		gridpane.setHgap(10);
-		Image img = new Image(new FileInputStream("C:\\Users\\EliteBook 8540w\\Pictures\\java\\plusSign.jpg"));
+		Image img = new Image(new FileInputStream("src/resources/plusSign.jpg"));
 		for(int i = 0; i < numButtons; i++){
 			if(i > 0 && i % 6 == 0){
 				increment++;
