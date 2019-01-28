@@ -20,17 +20,17 @@ public class TalkBoxApp{
 	Image[] images;
 	String[] names;
 	Media[] audioFiles;
-	GridPane gridpane;
+	private GridPane gridpane;
 	
 	public TalkBoxApp(File file) throws IOException{
 		names = new String[50];
 		images = new Image[50];
 		audioFiles = new Media[50];
 		Parser p = new Parser(file);
-		gridpane = new GridPane();
-		gridpane.setPrefSize(500, 500);
-		gridpane.setVgap(10);
-		gridpane.setHgap(10);
+		setGridpane(new GridPane());
+		getGridpane().setPrefSize(500, 500);
+		getGridpane().setVgap(10);
+		getGridpane().setHgap(10);
 		int increment = 0;
 		for(int i = 0; i < p.numButtons; i++){
 			if(i > 0 && i % 6 == 0){
@@ -59,7 +59,7 @@ public class TalkBoxApp{
 			});
 			GridPane.setConstraints(textField, i % 6, 2 + 2 * increment);
 			GridPane.setConstraints(iv1, i % 6, 1 + 2 * increment);
-			gridpane.getChildren().addAll(iv1,textField);
+			getGridpane().getChildren().addAll(iv1,textField);
 		}
 	}
 
@@ -108,6 +108,14 @@ public class TalkBoxApp{
 		
 		return gridpane;
 		
+	}
+
+	public GridPane getGridpane() {
+		return gridpane;
+	}
+
+	public void setGridpane(GridPane gridpane) {
+		this.gridpane = gridpane;
 	}
 
 }

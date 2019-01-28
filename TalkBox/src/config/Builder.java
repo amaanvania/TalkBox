@@ -3,8 +3,10 @@ package config;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.net.URI;
 
+import application.TalkBoxApp;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -17,6 +19,7 @@ import javafx.scene.control.ToolBar;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
@@ -27,15 +30,15 @@ import javafx.stage.Stage;
 public class Builder extends Application{
 	
 	public int numButtons;
+	public String[] result;
+	public String filename;
+	public int inc;
 	
 	public static void main(String[] args) {
 		launch(args);
-		
-		
 	}
 	
 	public void newButtonPrompt(Stage primaryStage) {
-		
 		StackPane stackpane = new StackPane();
 		Label title = new Label("Welcome to TalkBox Configuration App");
 		title.setScaleX(2);
@@ -43,8 +46,10 @@ public class Builder extends Application{
 		Button submit = new Button("Submit");
 		Label label1 = new Label("Enter Number of Buttons:");
 		TextField textField = new TextField ();
+		Label label2 = new Label("Enter File Name:");
+		TextField textField2 = new TextField ();
 		HBox hb = new HBox();
-		hb.getChildren().addAll(label1,textField,submit);
+		hb.getChildren().addAll(label2,textField2,label1,textField,submit);
 		hb.setAlignment(Pos.BOTTOM_CENTER);
 		hb.setSpacing(10);
 		stackpane.getChildren().addAll(title,hb);
@@ -57,10 +62,11 @@ public class Builder extends Application{
         	    public void handle(ActionEvent e) {
         	        if ((textField.getText() != null && !textField.getText().isEmpty())) {
         	            numButtons = Integer.parseInt(textField.getText());
+        	            filename = textField2.getText();
         	            primaryStage.close();
         	            try {
 							buildInitialGui(primaryStage);
-						} catch (FileNotFoundException e1) {
+						} catch (IOException e1) {
 							// TODO Auto-generated catch block
 							e1.printStackTrace();
 						}
@@ -74,15 +80,30 @@ public class Builder extends Application{
 	}
 	
 	public ToolBar buildToolbar(){
+		Button x = new Button("Save");
+		x.setOnMouseClicked(new EventHandler<MouseEvent>() {
+		    public void handle(MouseEvent me) {
+		    	try {
+					saveFile();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+		    }
+		});
 		 ToolBar toolBar = new ToolBar(
-			     new Button("Open")
+			     x
 			 );
+		 
 		 toolBar.setPrefSize(200, 20);
 		 return toolBar;
 	}
 	
-	public void buildInitialGui(Stage primaryStage) throws FileNotFoundException {
+	public void buildInitialGui(Stage primaryStage) throws IOException {
+		result = new String[numButtons * 3 + 1];
+		result[0] = String.valueOf(numButtons);
 		int increment = 0;
+		inc = 0;
 		GridPane gridpane = new GridPane();
 		gridpane.setPrefSize(500, 500);
 		gridpane.setVgap(10);
@@ -134,6 +155,10 @@ public class Builder extends Application{
 									        mediaPlayer.play();
 									    }
 									});
+									result[++inc] = textField.getText();
+									result[++inc] = Utilities.ImagePath;
+									result[++inc] = Utilities.AudioPath;
+									
 								} catch (FileNotFoundException e1) {
 									// TODO Auto-generated catch block
 									e1.printStackTrace();
@@ -142,35 +167,52 @@ public class Builder extends Application{
 							}
 						
 					});
-					
-					/**
-					try {
-						Image n = new Image(new FileInputStream(Utilities.ImagePath));
-						iv1.setImage(n);
-						iv1.setFitWidth(100);
-						iv1.setPreserveRatio(true);
-						iv1.setSmooth(true);
-						iv1.setCache(true);
-					} catch (FileNotFoundException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-					*/
-					
 				}
+
 			});
-			GridPane.setConstraints(edit, i % 6, 2 + 2 * increment);
-			GridPane.setConstraints(iv1, i % 6, 1 + 2 * increment);
+			GridPane.setConstraints(edit, i % 6, 5 + 2 * increment);
+			GridPane.setConstraints(iv1, i % 6, 4 + 2 * increment);
 			gridpane.getChildren().addAll(iv1,edit);
 		}
-		//ToolBar bar = buildToolbar();
-		//gridpane.getChildren().add(bar);
-		//GridPane.setConstraints(bar, 0, 0);
-		primaryStage.setScene(new Scene(gridpane));
+		ToolBar bar = buildToolbar();
+		Button play = playButton(new Stage());
+		StackPane a = new StackPane();
+		a.getChildren().addAll(gridpane,play,bar);
+		StackPane.setAlignment(bar, Pos.TOP_LEFT);
+		StackPane.setAlignment(play, Pos.BOTTOM_RIGHT);
+		StackPane.setAlignment(gridpane,Pos.BOTTOM_CENTER);
+		primaryStage.setScene(new Scene(a));
 		primaryStage.show();
 	}
 	
-	public void updateGui(Stage primaryStage) {
+	public Button playButton(Stage primaryStage) throws IOException {
+		Button play = new Button("Play");
+		play.setOnMouseClicked(new EventHandler<MouseEvent>() {
+		    public void handle(MouseEvent me) {
+		        try {
+		    		TalkBoxApp a = new TalkBoxApp(new File(filename));
+		    		GridPane b = a.getGridpane();
+		    		primaryStage.setTitle("TalkBox Application");
+		    		primaryStage.setScene(new Scene(b));
+		    		primaryStage.show();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+		    }
+		});
+		
+		return play;
+		
+	}
+	
+	public void saveFile() throws IOException {
+		FileWrite.fileCreate(filename);
+		FileWrite a = new FileWrite(new File(filename));
+		a.fileAppend(numButtons + "");
+		for(int i = 1; i < result.length; i++) {
+			a.fileAppend(result[i]);
+		}
 		
 	}
 

@@ -13,14 +13,13 @@ public class FileWrite {
 	}
 	
 	public void fileAppend(String s) throws IOException{
-		FileWriter fw = new FileWriter(file.getAbsolutePath(), false);
-		fw.write(s);
+		FileWriter fw = new FileWriter(file.getAbsolutePath(), true);
+		fw.write(s + "\n");
 		fw.close();
 	}
 	
-	public static void fileCreate(String filename,String msg) throws IOException{
-		FileWriter fw = new FileWriter(new File("src/resources/" + filename + ".txt"),true);
-		fw.write(msg);
+	public static void fileCreate(String filename) throws IOException{
+		FileWriter fw = new FileWriter(new File(filename + ".txt"),false);
 		fw.close();
 	}
 

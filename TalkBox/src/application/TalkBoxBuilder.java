@@ -20,7 +20,7 @@ public class TalkBoxBuilder extends Application{
 	public void start(Stage primaryStage) throws Exception {
 		// TODO Auto-generated method stub
 		TalkBoxApp a = new TalkBoxApp(new File("src/resources/configFile.txt"));
-		GridPane b = a.gridpane;
+		GridPane b = a.getGridpane();
 		primaryStage.setTitle("TalkBox Application");
 		primaryStage.setScene(new Scene(b));
 		primaryStage.show();
