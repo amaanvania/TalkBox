@@ -87,7 +87,7 @@ public class Builder extends Application{
 		gridpane.setPrefSize(500, 500);
 		gridpane.setVgap(10);
 		gridpane.setHgap(10);
-		Image img = new Image(new FileInputStream("src/resources/plusSign.jpg"));
+		Image img = new Image(new FileInputStream("src/resources/plusSign.JPG"));
 		for(int i = 0; i < numButtons; i++){
 			if(i > 0 && i % 6 == 0){
 				increment++;
@@ -163,9 +163,9 @@ public class Builder extends Application{
 			GridPane.setConstraints(iv1, i % 6, 1 + 2 * increment);
 			gridpane.getChildren().addAll(iv1,edit);
 		}
-		ToolBar bar = buildToolbar();
-		gridpane.getChildren().add(bar);
-		GridPane.setConstraints(bar, 0, 0);
+		//ToolBar bar = buildToolbar();
+		//gridpane.getChildren().add(bar);
+		//GridPane.setConstraints(bar, 0, 0);
 		primaryStage.setScene(new Scene(gridpane));
 		primaryStage.show();
 	}
