@@ -13,7 +13,6 @@ public class AudioButton {
 		this.name = "";
 		this.AudioPath = "";
 		this.ImagePath = "";
-		this.button = null;
 	}
 	
 	public AudioButton(String name, String AudioPath, String ImagePath, Button x) {
