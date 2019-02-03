@@ -10,14 +10,15 @@ import javafx.scene.layout.GridPane;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
-public class Utilities {
+public class Utilities { //class for some helpful utilities with static methods
 
 	public static String text;
 	public static String AudioPath;
 	public static String ImagePath;
 
-	public static String fileChoose(Stage mainStage) {
+	public static String fileChoose(Stage mainStage) { //method to prompt filechooser
 		FileChooser fileChooser = new FileChooser();
+		fileChooser.setInitialDirectory(new File("src/resources")); //initial dir is src/resources
 		File selectedFile = fileChooser.showOpenDialog(mainStage);
 		if (selectedFile != null) {
 			return selectedFile.getAbsolutePath();
@@ -25,7 +26,7 @@ public class Utilities {
 		return null;
 	}
 
-	public static GridPane setEditPrompt(Stage primaryStage) {
+	public static GridPane setEditPrompt(Stage primaryStage) { //method which builds edit prompt
 		GridPane gridpane = new GridPane();
 		gridpane.setVgap(10);
 		gridpane.setHgap(10);
@@ -33,7 +34,7 @@ public class Utilities {
 		//Button submit = new Button("Submit");
 		Button audio = new Button("Choose AudioFile");
 		Button image = new Button("Choose Image");
-		Label label1 = new Label("Set Title:");
+		Label label1 = new Label("Set Title:"); //prompt for name of button
 		
 		TextField audioField = new TextField();
 		TextField imageField = new TextField();
@@ -42,18 +43,8 @@ public class Utilities {
 		GridPane.setConstraints(audioField, 1, 1);
 		GridPane.setConstraints(image, 0, 2);
 		GridPane.setConstraints(imageField, 1, 2);
-		//gridpane.setConstraints(submit, 4, 4);
-		gridpane.getChildren().addAll(label1, audio, image,imageField, audioField);
-		/*submit.setOnAction(new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(ActionEvent e) {
-				if ((textField.getText() != null && !textField.getText().isEmpty())) {
-					text = textField.getText();
-					primaryStage.close();
-				}
-			}
-		});*/
-		image.setOnAction(new EventHandler<ActionEvent>() {
+		gridpane.getChildren().addAll(label1, audio, image,imageField, audioField);  //add all elements to gridpane and set their positions
+		image.setOnAction(new EventHandler<ActionEvent>() { //event handler which opens up filechooser
 			@Override
 			public void handle(ActionEvent e) {
 				AudioButton b = new AudioButton();
@@ -62,7 +53,7 @@ public class Utilities {
 				ImagePath = b.getImagePath();
 			}
 		});
-		audio.setOnAction(new EventHandler<ActionEvent>() {
+		audio.setOnAction(new EventHandler<ActionEvent>() { //event handler which opens up filechooser
 			@Override
 			public void handle(ActionEvent e) {
 				AudioButton b = new AudioButton();

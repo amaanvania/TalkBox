@@ -15,7 +15,8 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 
-public class TalkBoxApp{
+public class TalkBoxApp{	//class which builds GUI for talkbox application
+							//similar to config gui
 	
 	Image[] images;
 	String[] names;
@@ -37,11 +38,6 @@ public class TalkBoxApp{
 				increment++;
 			}
 			AudioButton b = p.buttons[i];
-			File f = new File(b.getAudioPath());
-			URI u = f.toURI();
-			Media sound = new Media(u.toString());
-			audioFiles[i] = sound;
-			MediaPlayer mediaPlayer = new MediaPlayer(sound);
 			names[i] = b.getName();
 			TextField textField = new TextField();
 			textField.setText(b.getName());
@@ -54,6 +50,11 @@ public class TalkBoxApp{
 			iv1.setCache(true);
 			iv1.setOnMouseClicked(new EventHandler<MouseEvent>() {
 			    public void handle(MouseEvent me) {
+					
+					File f = new File(b.getAudioPath());
+					URI u = f.toURI();
+					Media sound = new Media(u.toString());
+					MediaPlayer mediaPlayer = new MediaPlayer(sound);
 			        mediaPlayer.play();
 			    }
 			});

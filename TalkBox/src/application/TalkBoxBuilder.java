@@ -8,7 +8,7 @@ import javafx.scene.Scene;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 
-public class TalkBoxBuilder extends Application{
+public class TalkBoxBuilder extends Application{ //simple class that "runs" talk box app
 
 	public static void main(String[] args) throws IOException {
 		launch(args);

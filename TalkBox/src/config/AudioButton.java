@@ -1,13 +1,11 @@
 package config;
 
-import javafx.scene.control.Button;
-
-public class AudioButton {
+public class AudioButton {		//class that defines AudioButton object
+								//which contains a name, audiopath, and imagepath
 	
 	public String name;
 	public String AudioPath;
 	public String ImagePath;
-	public Button button;
 	
 	public AudioButton() {
 		this.name = "";
@@ -15,11 +13,10 @@ public class AudioButton {
 		this.ImagePath = "";
 	}
 	
-	public AudioButton(String name, String AudioPath, String ImagePath, Button x) {
+	public AudioButton(String name, String AudioPath, String ImagePath) {
 		this.name = name;
 		this.AudioPath = AudioPath;
 		this.ImagePath = ImagePath;
-		this.button = x;
 	}
 	
 	public String getName() {
@@ -47,11 +44,11 @@ public class AudioButton {
 	}
 	
 	public void chooseAudioPath() {
-		this.AudioPath = Utilities.fileChoose(null);
+		this.AudioPath = Utilities.fileChoose(null); //prompt for filechooser
 	}
 	
 	public void chooseImagePath() {
-		this.ImagePath = Utilities.fileChoose(null);
+		this.ImagePath = Utilities.fileChoose(null); //prompt for filechooser
 	}
 	
 	
