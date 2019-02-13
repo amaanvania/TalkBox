@@ -5,6 +5,8 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URI;
+import java.nio.file.FileSystems;
+import java.nio.file.Path;
 
 import application.TalkBoxApp;
 import javafx.application.Application;
@@ -29,8 +31,12 @@ import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.stage.Stage;
 
-public class Builder extends Application {		//class which builds the gui for config application
+public class Builder extends Application implements TalkBoxConfiguration{		//class which builds the gui for config application
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -3914103189932065787L;
 	public int numTotalButtons;
 	public int numSetButtons;
 	public String[] result;
@@ -176,14 +182,11 @@ public class Builder extends Application {		//class which builds the gui for con
 										URI u = f.toURI();
 										Media sound = new Media(u.toString());
 										MediaPlayer mediaPlayer = new MediaPlayer(sound);
-										mediaPlayer.play();
+										mediaPlayer.play();//method which allows sound to be outputted
 									}
 								});
 
 							} catch (FileNotFoundException e1) {
-								e1.printStackTrace();
-							} catch (IOException e1) {
-								// TODO Auto-generated catch block
 								e1.printStackTrace();
 							}
 							x.close();
@@ -248,6 +251,41 @@ public class Builder extends Application {		//class which builds the gui for con
 		newButtonPrompt(primaryStage);
 		// System.out.println(numButtonReturn());
 		// loadImage(primaryStage);
+	}
+
+	@Override
+	public int getNumberOfAudioButtons() {
+		// TODO Auto-generated method stub
+		return buttons.length;
+	}
+
+	@Override
+	public int getNumberOfAudioSets() {
+		// TODO Auto-generated method stub
+		return buttons.length;
+	}
+
+	@Override
+	public int getTotalNumberOfButtons() {
+		// TODO Auto-generated method stub
+		return numTotalButtons;
+	}
+
+	@Override
+	public Path getRelativePathToAudioFiles() {
+		// TODO Auto-generated method stub
+		Path path = FileSystems.getDefault().getPath("src/resouces");
+		return path;
+	}
+
+	@Override
+	public String[][] getAudioFileNames() {
+		// TODO Auto-generated method stub
+		String[][] result = new String[getNumberOfAudioButtons()][getNumberOfAudioSets()];
+		for(AudioButton b : buttons) {
+			
+		}
+		return result;
 	}
 
 }
