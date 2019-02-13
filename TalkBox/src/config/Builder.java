@@ -14,6 +14,7 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -24,9 +25,11 @@ import javafx.scene.control.Slider;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.stage.Stage;
@@ -48,14 +51,14 @@ public class Builder extends Application implements TalkBoxConfiguration{		//cla
 		launch(args);
 	}
 	public Label buildTitle(){
-		Label title = new Label("Welcome to TalkBox Configuration App");
+		Label title = new Label("Welcome to TalkBox Config App");
 		title.setScaleX(2);
 		title.setScaleY(2);
 		return title;
 	}
-	public HBox buildHBox(Stage primaryStage){
+	public FlowPane buildFlowPane(Stage primaryStage){
 		HBox hb = new HBox();
-		Slider s = buildSlider();
+		FlowPane s = buildSlider();
 		TextField textField2 = new TextField();
 		Button submit = new Button("Submit");
 		submit.setOnAction(new EventHandler<ActionEvent>() { //actionevent upon clicking "submit" button
@@ -72,25 +75,33 @@ public class Builder extends Application implements TalkBoxConfiguration{		//cla
 				}
 			}
 		});
-		Label label1 = new Label("Enter Number of Buttons:");
 		Label label2 = new Label("Enter File Name:");
-		hb.getChildren().addAll(label2, textField2,label1, s, submit);
+		HBox hb2 = new HBox();
+		hb2.getChildren().addAll(s);
+		hb2.setAlignment(Pos.CENTER);
+		hb.getChildren().addAll(label2, textField2,submit);
 		hb.setAlignment(Pos.BOTTOM_CENTER);
 		hb.setSpacing(10);	
-		return hb;
+		FlowPane g = new FlowPane();
+		g.setVgap(10);
+		g.setHgap(10);
+		g.setAlignment(Pos.BOTTOM_CENTER);
+		g.getChildren().addAll(hb2,hb);
+		return g;
 	}
 	public void newButtonPrompt(Stage primaryStage) {   //GUI for initial prompt
 		StackPane stackpane = new StackPane();
 		Label title = buildTitle();
-		HBox hb = buildHBox(primaryStage);
+		FlowPane hb = buildFlowPane(primaryStage);
 		stackpane.getChildren().addAll(title,hb);
 		StackPane.setAlignment(title, Pos.CENTER);
 		primaryStage.setTitle("TalkBox Config App");
-		primaryStage.setScene(new Scene(stackpane, 900, 300)); //show the stackpane, 700x300 by default
+		primaryStage.setScene(new Scene(stackpane, 400, 400)); //show the stackpane, 700x300 by default
 		primaryStage.show();
 	}
 	
-	public Slider buildSlider(){
+	public FlowPane buildSlider(){
+		final Label instances = new Label("Number of Buttons: 1");
 		final Slider slider = new Slider(0, 18, 1);
         slider.setPrefWidth(250);
         slider.setShowTickMarks(true);
@@ -101,9 +112,17 @@ public class Builder extends Application implements TalkBoxConfiguration{		//cla
             @Override
             public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
                 numTotalButtons = newValue.intValue();
+                instances.textProperty().setValue("Number of Buttons: " + newValue.intValue());
             }
         });
-        return slider;
+        
+        final VBox box = new VBox(20, instances, slider);
+        box.setAlignment(Pos.CENTER);
+        final FlowPane layout = new FlowPane(20, 20, box);
+        layout.setPadding(new Insets(20));
+        layout.setAlignment(Pos.CENTER);
+        
+        return layout;
 		
 	}
 
@@ -201,7 +220,7 @@ public class Builder extends Application implements TalkBoxConfiguration{		//cla
 			gridpane.getChildren().addAll(iv1, edit);
 		}
 		ToolBar bar = buildToolbar();		//adds toolbar to GUI
-		Button play = playButton(new Stage()); //adds playButton to GUI
+		Button play = buildPlayButton(new Stage()); //adds playButton to GUI
 		StackPane a = new StackPane();
 		a.getChildren().addAll(gridpane, play, bar);	//adds all elements to a stackpane
 		StackPane.setAlignment(bar, Pos.TOP_LEFT);		
@@ -211,7 +230,7 @@ public class Builder extends Application implements TalkBoxConfiguration{		//cla
 		primaryStage.show();
 	}
 
-	public Button playButton(Stage primaryStage) throws IOException {	//method which builds "play" button
+	public Button buildPlayButton(Stage primaryStage) throws IOException {	//method which builds "play" button
 		Button play = new Button("Play");
 		play.setOnMouseClicked(new EventHandler<MouseEvent>() {
 			public void handle(MouseEvent me) {		//mouseevent handler which launches talkbox app
@@ -256,13 +275,13 @@ public class Builder extends Application implements TalkBoxConfiguration{		//cla
 	@Override
 	public int getNumberOfAudioButtons() {
 		// TODO Auto-generated method stub
-		return buttons.length;
+		return numSetButtons;
 	}
 
 	@Override
 	public int getNumberOfAudioSets() {
 		// TODO Auto-generated method stub
-		return buttons.length;
+		return numSetButtons;
 	}
 
 	@Override
@@ -282,7 +301,8 @@ public class Builder extends Application implements TalkBoxConfiguration{		//cla
 	public String[][] getAudioFileNames() {
 		// TODO Auto-generated method stub
 		String[][] result = new String[getNumberOfAudioButtons()][getNumberOfAudioSets()];
-		for(AudioButton b : buttons) {
+		for(int i = 0; i < buttons.length; i++) {
+			result[i][0] = buttons[i].getAudioPath();
 			
 		}
 		return result;
