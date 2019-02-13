@@ -8,6 +8,8 @@ import java.net.URI;
 
 import application.TalkBoxApp;
 import javafx.application.Application;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Pos;
@@ -16,10 +18,10 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToolBar;
+import javafx.scene.control.Slider;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
@@ -29,7 +31,8 @@ import javafx.stage.Stage;
 
 public class Builder extends Application {		//class which builds the gui for config application
 
-	public int numButtons;
+	public int numTotalButtons;
+	public int numSetButtons;
 	public String[] result;
 	public AudioButton[] buttons;
 	public String filename;
@@ -38,31 +41,21 @@ public class Builder extends Application {		//class which builds the gui for con
 	public static void main(String[] args) {
 		launch(args);
 	}
-
-	public void newButtonPrompt(Stage primaryStage) {   //GUI for initial prompt
-		StackPane stackpane = new StackPane();
+	public Label buildTitle(){
 		Label title = new Label("Welcome to TalkBox Configuration App");
 		title.setScaleX(2);
 		title.setScaleY(2);
-		Button submit = new Button("Submit");
-		Label label1 = new Label("Enter Number of Buttons:");
-		TextField textField = new TextField();
-		Label label2 = new Label("Enter File Name:");
-		TextField textField2 = new TextField();
+		return title;
+	}
+	public HBox buildHBox(Stage primaryStage){
 		HBox hb = new HBox();
-		hb.getChildren().addAll(label2, textField2, label1, textField, submit);
-		hb.setAlignment(Pos.BOTTOM_CENTER);
-		hb.setSpacing(10);
-		stackpane.getChildren().addAll(title, hb);
-		StackPane.setAlignment(title, Pos.CENTER);
-		primaryStage.setTitle("TalkBox Config App");
-		primaryStage.setScene(new Scene(stackpane, 700, 300)); //show the stackpane, 700x300 by default
-		primaryStage.show();
+		Slider s = buildSlider();
+		TextField textField2 = new TextField();
+		Button submit = new Button("Submit");
 		submit.setOnAction(new EventHandler<ActionEvent>() { //actionevent upon clicking "submit" button
 			@Override
 			public void handle(ActionEvent e) {
-				if ((textField.getText() != null && !textField.getText().isEmpty())) {
-					numButtons = Integer.parseInt(textField.getText());
+				if ((textField2.getText() != null && !textField2.getText().isEmpty())) {
 					filename = textField2.getText();
 					primaryStage.close();
 					try {
@@ -73,10 +66,39 @@ public class Builder extends Application {		//class which builds the gui for con
 				}
 			}
 		});
+		Label label1 = new Label("Enter Number of Buttons:");
+		Label label2 = new Label("Enter File Name:");
+		hb.getChildren().addAll(label2, textField2,label1, s, submit);
+		hb.setAlignment(Pos.BOTTOM_CENTER);
+		hb.setSpacing(10);	
+		return hb;
 	}
-
-	public int numButtonReturn() {
-		return numButtons;
+	public void newButtonPrompt(Stage primaryStage) {   //GUI for initial prompt
+		StackPane stackpane = new StackPane();
+		Label title = buildTitle();
+		HBox hb = buildHBox(primaryStage);
+		stackpane.getChildren().addAll(title,hb);
+		StackPane.setAlignment(title, Pos.CENTER);
+		primaryStage.setTitle("TalkBox Config App");
+		primaryStage.setScene(new Scene(stackpane, 900, 300)); //show the stackpane, 700x300 by default
+		primaryStage.show();
+	}
+	
+	public Slider buildSlider(){
+		final Slider slider = new Slider(0, 18, 1);
+        slider.setPrefWidth(250);
+        slider.setShowTickMarks(true);
+        slider.setShowTickLabels(true);
+        slider.setMajorTickUnit(6);
+        slider.setBlockIncrement(1);
+        slider.valueProperty().addListener(new ChangeListener<Number>() {
+            @Override
+            public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
+                numTotalButtons = newValue.intValue();
+            }
+        });
+        return slider;
+		
 	}
 
 	public ToolBar buildToolbar() { // method which builds and returns a Toolbar
@@ -101,7 +123,7 @@ public class Builder extends Application {		//class which builds the gui for con
 	}
 
 	public void buildInitialGui(Stage primaryStage) throws IOException {		//method which builds the configuration GUI
-		buttons = new AudioButton[numButtons];
+		buttons = new AudioButton[numTotalButtons];
 		inc = 0;
 		int increment = 0;
 		GridPane gridpane = new GridPane();
@@ -109,7 +131,7 @@ public class Builder extends Application {		//class which builds the gui for con
 		gridpane.setVgap(10);
 		gridpane.setHgap(10);
 		Image img = new Image(new FileInputStream("src/resources/plusSign.JPG"));		//simple + sign image
-		for (int i = 0; i < numButtons; i++) {
+		for (int i = 0; i < numTotalButtons; i++) {
 			if (i > 0 && i % 6 == 0) {	
 				increment++; //incrementer to define number of rows
 			}
@@ -139,6 +161,7 @@ public class Builder extends Application {		//class which builds the gui for con
 						public void handle(ActionEvent e) {
 							;
 							try {
+								numSetButtons++;
 								edit.setText(textField.getText());	//sets text of button to user input
 								Image n = new Image(new FileInputStream(Utilities.ImagePath)); //sets imagePath to user input
 								iv1.setImage(n);
@@ -146,7 +169,7 @@ public class Builder extends Application {		//class which builds the gui for con
 								iv1.setPreserveRatio(true);
 								iv1.setSmooth(true);
 								iv1.setCache(true);
-								buttons[inc++ % numButtons] = new AudioButton(textField.getText(),Utilities.AudioPath,Utilities.ImagePath); //assigns current input to an audiobutton
+								buttons[inc++ % numSetButtons] = new AudioButton(textField.getText(),Utilities.AudioPath,Utilities.ImagePath); //assigns current input to an audiobutton
 								iv1.setOnMouseClicked(new EventHandler<MouseEvent>() {	//adds event handler to picture, allowing user click to generate sound
 									public void handle(MouseEvent me) {
 										File f = new File(Utilities.AudioPath);
@@ -209,11 +232,13 @@ public class Builder extends Application {		//class which builds the gui for con
 	public void saveFile(AudioButton[] b) throws IOException {		//simple method to save a file
 		FileWrite a = new FileWrite(new File(filename + ".txt"));	//create new txt file
 		FileWrite.fileCreate(filename + ".txt");
-		a.fileAppend(numButtons + ""); //append numbuttons
+		a.fileAppend(numSetButtons + ""); //append numbuttons
 		for (AudioButton x : b) {
+			if(x!= null){
 			a.fileAppend(x.name);	//append name
 			a.fileAppend(x.ImagePath); //append imagepath
 			a.fileAppend(x.AudioPath); //append audiopath
+			}
 		}
 
 	}
