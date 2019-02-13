@@ -36,8 +36,8 @@ public class Utilities { //class for some helpful utilities with static methods
 		Button image = new Button("Choose Image");
 		Label label1 = new Label("Set Title:"); //prompt for name of button
 		
-		TextField audioField = new TextField();
-		TextField imageField = new TextField();
+		TextField audioField = new TextField(AudioPath);
+		TextField imageField = new TextField(ImagePath);
 		GridPane.setConstraints(label1, 0, 0);
 		GridPane.setConstraints(audio, 0, 1);
 		GridPane.setConstraints(audioField, 1, 1);

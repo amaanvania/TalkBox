@@ -14,7 +14,7 @@ public class Parser { //class which parses txt files for configFile format
 	public int numButtons;
 
 	public Parser(File file) throws IOException {
-		buttons = new AudioButton[100]; //max 100 buttons
+		//max 100 buttons
 		BufferedReader bufRead = new BufferedReader(new FileReader(file)); //buffered reader on file
 		String myLine = null;
 		List<String[]> arrayList = new ArrayList<>(); //arrayList of string[]
@@ -24,6 +24,7 @@ public class Parser { //class which parses txt files for configFile format
 		}
 		bufRead.close();
 		numButtons = Integer.parseInt(arrayList.get(0)[0]); //number of buttons will be first line
+		buttons = new AudioButton[numButtons]; 
 		int lineNum = 0;
 		String combinedString = "";
 		String[] lines = new String[numButtons * 3 + 10]; 
