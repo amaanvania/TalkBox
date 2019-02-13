@@ -77,7 +77,7 @@ public class Builder extends Application implements TalkBoxConfiguration{		//cla
 	
 	public Button buildChooseExisting(Stage primaryStage){
 		Button button = new Button("Choose Existing");
-		
+		button.setTooltip(new Tooltip("Click to choose existing Project"));
 		button.setOnAction(new EventHandler<ActionEvent>() { //actionevent upon clicking "submit" button
 			@Override
 			public void handle(ActionEvent e) {
@@ -100,6 +100,7 @@ public class Builder extends Application implements TalkBoxConfiguration{		//cla
 	
 	public Button buildNewProject(Stage primaryStage){
 		Button button = new Button("New Project");	
+		button.setTooltip(new Tooltip("Click to Start New Project"));
 		button.setOnAction(new EventHandler<ActionEvent>() { //actionevent upon clicking "submit" button
 			@Override
 			public void handle(ActionEvent e) {
@@ -133,6 +134,7 @@ public class Builder extends Application implements TalkBoxConfiguration{		//cla
 		FlowPane s = buildSlider();
 		TextField textField2 = new TextField();
 		Button submit = new Button("Submit");
+		submit.setTooltip(new Tooltip("Click Submit to Start Configuration"));
 		submit.setOnAction(new EventHandler<ActionEvent>() { //actionevent upon clicking "submit" button
 			@Override
 			public void handle(ActionEvent e) {
@@ -170,7 +172,7 @@ public class Builder extends Application implements TalkBoxConfiguration{		//cla
 		Scene scene = new Scene(hb,320,450);
 		String css = this.getClass().getResource("/resources/buttonstyle.css").toExternalForm();
 		scene.getStylesheets().add(css);
-		primaryStage.setScene(scene);						
+		primaryStage.setScene(scene);	
 		primaryStage.show();
 	}
 	
@@ -183,6 +185,7 @@ public class Builder extends Application implements TalkBoxConfiguration{		//cla
         slider.setShowTickLabels(true);
         slider.setMajorTickUnit(6);
         slider.setBlockIncrement(1);
+        slider.setTooltip(new Tooltip("Drag Slider to set Number of Buttons"));
         slider.valueProperty().addListener(new ChangeListener<Number>() {
             @Override
             public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
@@ -203,6 +206,7 @@ public class Builder extends Application implements TalkBoxConfiguration{		//cla
 
 	public ToolBar buildToolbar() { // method which builds and returns a Toolbar
 		Button x = new Button("Save"); // save button
+		x.setTooltip(new Tooltip("Click to Save File"));
 		x.setOnMouseClicked(new EventHandler<MouseEvent>() { // action listener
 																// for mouse
 																// click
@@ -223,7 +227,7 @@ public class Builder extends Application implements TalkBoxConfiguration{		//cla
 	}
 
 	public void buildInitialGui(Stage primaryStage) throws IOException {		//method which builds the configuration GUI
-		if(buttons == null)buttons = new AudioButton[numTotalButtons];
+		buttons = (buttons == null) ? new AudioButton[numTotalButtons] : buttons;
 		inc = 0;
 		int increment = 0;
 		GridPane gridpane = new GridPane();
@@ -231,15 +235,13 @@ public class Builder extends Application implements TalkBoxConfiguration{		//cla
 		gridpane.setVgap(10);
 		gridpane.setHgap(10);
 		Image img = new Image(new FileInputStream("src/resources/plusSign.JPG"));	//simple + sign image
-		int i;
-		for (i = 0; i < numTotalButtons; i++) {
+		for (int i = 0; i < numTotalButtons; i++) {
 			int k = i;
 			if (i > 0 && i % 6 == 0) {	
 				increment++; //incrementer to define number of rows
 			}
 			AudioButton currentButton;
-			if(buttons[i] == null)currentButton = new AudioButton();
-			else currentButton = buttons[i];
+			currentButton = (buttons[i] == null) ? new AudioButton() : buttons[i];
 			ImageView iv1 = new ImageView();
 			if(buttons[i] == null)iv1.setImage(img);
 			else iv1.setImage(new Image(new FileInputStream(buttons[i].getImagePath())));
@@ -248,8 +250,7 @@ public class Builder extends Application implements TalkBoxConfiguration{		//cla
 			iv1.setSmooth(true);
 			iv1.setCache(true);
 			File f;
-			if(buttons[i] == null) f = new File("src/resources/correct.wav");
-			else f = new File(buttons[i].getAudioPath());
+			f = (buttons[i] == null) ? new File("src/resources/correct.wav") : new File(buttons[i].getAudioPath());
 			TextField textField;
 			if(currentButton == null) textField = new TextField("");
 			else textField = new TextField(currentButton.getName());
@@ -281,13 +282,11 @@ public class Builder extends Application implements TalkBoxConfiguration{		//cla
 								iv1.setPreserveRatio(true);
 								iv1.setSmooth(true);
 								iv1.setCache(true);
-								Tooltip t = new Tooltip("Click to Play Sound");
-								Tooltip.install(iv1, t);
+								Tooltip.install(iv1, new Tooltip("Click to Play Sound"));
 								currentButton.setName(textField.getText());//assigns current input to an audiobutton
 								currentButton.setImagePath(Utilities.ImagePath);
 								currentButton.setAudioPath(Utilities.AudioPath);
 								buttons[k] = currentButton;
-								numSetButtons = k + 1;
 								iv1.setOnMouseClicked(new EventHandler<MouseEvent>() {	//adds event handler to picture, allowing user click to generate sound
 									public void handle(MouseEvent me) {
 										if(me.getButton().equals(MouseButton.PRIMARY)){
@@ -351,11 +350,24 @@ public class Builder extends Application implements TalkBoxConfiguration{		//cla
 		return play;
 
 	}
-
+	
+	public int getSetButtons(){
+		int i = 0;
+		for(AudioButton b : buttons){
+			if(b!=null){
+				if(b.getName().length() > 0 && b.getAudioPath().length() > 0 && b.getImagePath().length() > 0){
+					i++;	
+				}
+			}
+		}
+		numSetButtons = i;
+		return numSetButtons;
+	}
+	
 	public void saveFile(AudioButton[] b) throws IOException {		//simple method to save a file
 		FileWrite a = new FileWrite(new File(filename + ".txt"));	//create new txt file
 		FileWrite.fileCreate(filename + ".txt");
-		a.fileAppend(numSetButtons + ""); //append numbuttons
+		a.fileAppend(getSetButtons() + ""); //append numbuttons
 		for (AudioButton x : b) {
 			if(x!= null){
 			a.fileAppend(x.name);	//append name
