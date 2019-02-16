@@ -234,7 +234,7 @@ public class Builder extends Application implements TalkBoxConfiguration{		//cla
 		gridpane.setPrefSize(500, 500);
 		gridpane.setVgap(10);
 		gridpane.setHgap(10);
-		Image img = new Image(new FileInputStream("src/resources/plusSign.JPG"));	//simple + sign image
+		Image img = new Image(new FileInputStream("src/resources/PlusSign.png"));	//simple + sign image
 		for (int i = 0; i < numTotalButtons; i++) {
 			int k = i;
 			if (i > 0 && i % 6 == 0) {	
