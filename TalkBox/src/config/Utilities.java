@@ -35,14 +35,12 @@ public class Utilities { //class for some helpful utilities with static methods
 		Button audio = new Button("Choose AudioFile");
 		Button image = new Button("Choose Image");
 		Label label1 = new Label("Set Title:"); //prompt for name of button
-		
+
 		TextField audioField = new TextField(AudioPath);
 		TextField imageField = new TextField(ImagePath);
-		GridPane.setConstraints(label1, 0, 0);
-		GridPane.setConstraints(audio, 0, 1);
-		GridPane.setConstraints(audioField, 1, 1);
-		GridPane.setConstraints(image, 0, 2);
-		GridPane.setConstraints(imageField, 1, 2);
+		
+		// Set GridPaneConstraints
+		setGridPaneConstraints(audio, image, label1, audioField, imageField);
 		gridpane.getChildren().addAll(label1, audio, image,imageField, audioField);  //add all elements to gridpane and set their positions
 		image.setOnAction(new EventHandler<ActionEvent>() { //event handler which opens up filechooser
 			@Override
@@ -64,6 +62,15 @@ public class Utilities { //class for some helpful utilities with static methods
 		});
 		return gridpane;
 
+	}
+
+	private static void setGridPaneConstraints(Button audio, Button image, Label label1, TextField audioField,
+			TextField imageField) {
+		GridPane.setConstraints(label1, 0, 0);
+		GridPane.setConstraints(audio, 0, 1);
+		GridPane.setConstraints(audioField, 1, 1);
+		GridPane.setConstraints(image, 0, 2);
+		GridPane.setConstraints(imageField, 1, 2);
 	}
 
 	public static String getText() {
