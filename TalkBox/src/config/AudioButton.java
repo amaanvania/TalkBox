@@ -1,6 +1,8 @@
 package config;
 
-public class AudioButton {		//class that defines AudioButton object
+import java.io.Serializable;
+
+public class AudioButton implements Serializable{		//class that defines AudioButton object
 								//which contains a name, audiopath, and imagepath
 	
 	public String name;

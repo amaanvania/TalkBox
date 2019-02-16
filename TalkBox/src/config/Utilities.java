@@ -25,6 +25,16 @@ public class Utilities { //class for some helpful utilities with static methods
 		}
 		return null;
 	}
+	
+	public static File configFileChoose(Stage mainStage) { //method to prompt filechooser
+		FileChooser fileChooser = new FileChooser();
+		fileChooser.setInitialDirectory(new File("src/configFiles/")); //initial dir is src/configFiles
+		File selectedFile = fileChooser.showOpenDialog(mainStage);
+		if (selectedFile != null) {
+			return selectedFile;
+		}
+		return null;
+	}
 
 	public static GridPane setEditPrompt(Stage primaryStage) { //method which builds edit prompt
 		GridPane gridpane = new GridPane();

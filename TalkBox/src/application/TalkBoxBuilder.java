@@ -3,6 +3,7 @@ package application;
 import java.io.File;
 import java.io.IOException;
 
+import config.Builder;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.layout.GridPane;
@@ -19,7 +20,7 @@ public class TalkBoxBuilder extends Application{ //simple class that "runs" talk
 	@Override
 	public void start(Stage primaryStage) throws Exception {
 		// TODO Auto-generated method stub
-		TalkBoxApp a = new TalkBoxApp(new File("src/resources/configFile.txt"));
+		TalkBoxApp a = new TalkBoxApp(new Builder());
 		GridPane b = a.getGridpane();
 		primaryStage.setTitle("TalkBox Application");
 		primaryStage.setScene(new Scene(b));

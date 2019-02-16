@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.net.URI;
 
 import config.AudioButton;
+import config.Builder;
 import javafx.event.EventHandler;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
@@ -23,21 +24,20 @@ public class TalkBoxApp{	//class which builds GUI for talkbox application
 	Media[] audioFiles;
 	private GridPane gridpane;
 	
-	public TalkBoxApp(File file) throws IOException{
+	public TalkBoxApp(Builder a) throws IOException{
 		names = new String[50];
 		images = new Image[50];
 		audioFiles = new Media[50];
-		Parser p = new Parser(file);
 		setGridpane(new GridPane());
 		getGridpane().setPrefSize(500, 500);
 		getGridpane().setVgap(10);
 		getGridpane().setHgap(10);
 		int increment = 0;
-		for(int i = 0; i < p.numButtons; i++){
+		for(int i = 0; i < a.getSetButtons(); i++){
 			if(i > 0 && i % 6 == 0){
 				increment++;
 			}
-			AudioButton b = p.buttons[i];
+			AudioButton b = a.buttons[i];
 			names[i] = b.getName();
 			TextField textField = new TextField();
 			textField.setText(b.getName());

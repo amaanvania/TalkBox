@@ -4,7 +4,10 @@ import java.awt.Desktop;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.FileSystems;
@@ -43,19 +46,29 @@ import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.stage.Stage;
 
-public class Builder extends Application implements TalkBoxConfiguration{		//class which builds the gui for config application
+public class Builder extends Application implements TalkBoxConfiguration{		/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+//class which builds the gui for config application
 
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = -3914103189932065787L;
 	public int numTotalButtons;
 	public int numSetButtons;
-	public String[] result;
 	public AudioButton[] buttons;
 	public String filename;
-	public int inc;
-
+	public transient int inc;
+	File file;
+	
+	public Builder(){
+		this.numTotalButtons = 0;
+		this.numSetButtons = 0;
+		this.buttons = null;
+		this.filename = "";
+		this.inc = 0;
+	}
 	public static void main(String[] args) {
 		launch(args);
 	}
@@ -83,17 +96,12 @@ public class Builder extends Application implements TalkBoxConfiguration{		//cla
 		button.setOnAction(new EventHandler<ActionEvent>() { //actionevent upon clicking "submit" button
 			@Override
 			public void handle(ActionEvent e) {
-				filename = Utilities.fileChoose(new Stage());
-				try {
-					Parser p = new Parser(new File(filename));
-					buttons = p.getAudioButtons();
-					numTotalButtons = buttons.length;
-					numSetButtons = buttons.length;
-					buildInitialGui(primaryStage);
-				} catch (IOException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
+					try {
+						openSerializedFile(primaryStage);
+					} catch (IOException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
 			}
 		});
 		return button;
@@ -142,6 +150,7 @@ public class Builder extends Application implements TalkBoxConfiguration{		//cla
 			public void handle(ActionEvent e) {
 				if ((textField2.getText() != null && !textField2.getText().isEmpty())) {
 					filename = textField2.getText();
+					file = new File("src/configFiles/" + filename + ".ser");
 					primaryStage.close();
 					try {
 						buildInitialGui(primaryStage);
@@ -230,20 +239,25 @@ public class Builder extends Application implements TalkBoxConfiguration{		//cla
 		return toolBar;
 	}
 	
-	public ToolBar buildBotToolbar() { // method which builds and returns the bot Toolbar
+	public ToolBar buildBotToolbar(Stage primaryStage) throws IOException { // method which builds and returns the bot Toolbar
 		Button play = new Button("Play"); // play button
 		play.setId("play-config");
 		play.setTooltip(new Tooltip("Click to Open this configuration in the TalkBox App"));
 		play.setOnMouseClicked(new EventHandler<MouseEvent>() { // action listener
 																// for mouse
 																// click
-			public void handle(MouseEvent me) {
+			public void handle(MouseEvent me) {		//mouseevent handler which launches talkbox app
 				try {
-					buildPlayButton(new Stage());
-
+					TalkBoxApp a = new TalkBoxApp(openSerializedFile(file));
+					GridPane b = a.getGridpane();
+					primaryStage.setTitle("TalkBox Application");
+					primaryStage.setScene(new Scene(b));
+					primaryStage.show();
 				} catch (IOException e) {
+					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
+				
 			}
 		});
 		Button save = new Button("Save"); // save button
@@ -253,12 +267,8 @@ public class Builder extends Application implements TalkBoxConfiguration{		//cla
 																// for mouse
 																// click
 			public void handle(MouseEvent me) {
-				try {
-					saveFile(buttons);	//append each button to file
+					saveSerializedFile();	//append each button to file
 
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
 			}
 		});
 		ToolBar toolBar = new ToolBar(play, save // add save button to toolbar
@@ -291,12 +301,10 @@ public class Builder extends Application implements TalkBoxConfiguration{		//cla
 			iv1.setPreserveRatio(true);
 			iv1.setSmooth(true);
 			iv1.setCache(true);
-			File f;
-			f = (buttons[i] == null) ? new File("src/resources/correct.wav") : new File(buttons[i].getAudioPath());
 			TextField textField;
 			if(currentButton == null) textField = new TextField("");
 			else textField = new TextField(currentButton.getName());
-			Button edit = new Button("Edit Button:");
+			Button edit = (buttons[i] == null) ? new Button("Edit Button:") : new Button(textField.getText());
 			edit.setPrefSize(100, 20);
 			edit.setTooltip(new Tooltip("Click to Edit Button"));
 			edit.setOnAction(new EventHandler<ActionEvent>() { //event handler for "edit" button allowing user to edit buttons
@@ -332,6 +340,7 @@ public class Builder extends Application implements TalkBoxConfiguration{		//cla
 								iv1.setOnMouseClicked(new EventHandler<MouseEvent>() {	//adds event handler to picture, allowing user click to generate sound
 									public void handle(MouseEvent me) {
 										if(me.getButton().equals(MouseButton.PRIMARY)){
+											File f = new File(buttons[k].getAudioPath());
 											URI u = f.toURI();
 											Media sound = new Media(u.toString());
 											MediaPlayer mediaPlayer = new MediaPlayer(sound);
@@ -355,7 +364,7 @@ public class Builder extends Application implements TalkBoxConfiguration{		//cla
 			gridpane.getChildren().addAll(iv1, edit);
 		}
 		ToolBar topToolBar = buildTopToolbar();		//adds toolbar to the top of the GUI
-		ToolBar botToolBar = buildBotToolbar();		//adds toolbar to the bottom of the GUI
+		ToolBar botToolBar = buildBotToolbar(new Stage());		//adds toolbar to the bottom of the GUI
 	
 		StackPane a = new StackPane();
 		a.getChildren().addAll(gridpane, botToolBar, topToolBar);	//adds all elements to a stackpane
@@ -367,33 +376,7 @@ public class Builder extends Application implements TalkBoxConfiguration{		//cla
 		scene.getStylesheets().add(css);
 		primaryStage.setScene(scene);
 		primaryStage.show();
-	}
-
-	public Button buildPlayButton(Stage primaryStage) throws IOException {	//method which builds "play" button
-		Button play = new Button("Play");
-		play.setOnMouseClicked(new EventHandler<MouseEvent>() {
-			public void handle(MouseEvent me) {		//mouseevent handler which launches talkbox app
-				try {
-					TalkBoxApp a = new TalkBoxApp(new File(filename + ".txt"));
-					GridPane b = a.getGridpane();
-					primaryStage.setTitle("TalkBox Application");
-					primaryStage.setScene(new Scene(b));
-					primaryStage.show();
-				} catch (IOException e) {
-					Alert alert = new Alert(AlertType.ERROR);
-					alert.setTitle("Error Dialog");
-					alert.setHeaderText("Invalid File");
-					alert.setContentText("Save File Before Playing");
-					alert.showAndWait();
-					e.printStackTrace();
-				}
-			}
-		});
-
-		return play;
-
-	}
-	
+	}	
 	public int getSetButtons(){
 		int i = 0;
 		for(AudioButton b : buttons){
@@ -407,25 +390,72 @@ public class Builder extends Application implements TalkBoxConfiguration{		//cla
 		return numSetButtons;
 	}
 	
-	public void saveFile(AudioButton[] b) throws IOException {		//simple method to save a file
-		FileWrite a = new FileWrite(new File(filename + ".txt"));	//create new txt file
-		FileWrite.fileCreate(filename + ".txt");
-		a.fileAppend(getSetButtons() + ""); //append numbuttons
-		for (AudioButton x : b) {
-			if(x!= null){
-			a.fileAppend(x.name);	//append name
-			a.fileAppend(x.ImagePath); //append imagepath
-			a.fileAppend(x.AudioPath); //append audiopath
-			}
-		}
-
+	public void openSerializedFile(Stage primaryStage) throws IOException{
+		Builder e = null;
+		File f = new File("");
+		   try {
+			   f = Utilities.configFileChoose(new Stage());
+		         FileInputStream fileIn = new FileInputStream(f);
+		         ObjectInputStream in = new ObjectInputStream(fileIn);
+		         e = (Builder) in.readObject();
+		         in.close();
+		         fileIn.close();
+		      } catch (IOException i) {
+		         i.printStackTrace();
+		         return;
+		      } catch (ClassNotFoundException c) {
+		         System.out.println("Employee class not found");
+		         c.printStackTrace();
+		         return;
+		      }
+		   this.file = f;
+		   this.buttons = e.buttons;
+		   this.numSetButtons = e.numSetButtons;
+		   this.filename = e.filename;
+		   this.numTotalButtons = e.numTotalButtons;
+		   this.inc = e.inc;
+		   buildInitialGui(primaryStage);
 	}
+	
+	public Builder openSerializedFile(File file) throws IOException{
+		Builder e = null;
+		   try {
+		         FileInputStream fileIn = new FileInputStream(file.getAbsolutePath());
+		         ObjectInputStream in = new ObjectInputStream(fileIn);
+		         e = (Builder) in.readObject();
+		         in.close();
+		         fileIn.close();
+		      } catch (IOException i) {
+		         i.printStackTrace();
+		      } catch (ClassNotFoundException c) {
+		         System.out.println("class not found");
+		         c.printStackTrace();
+		      }
+		   return e;
+	}
+	
+	public void saveSerializedFile(){
+		Builder b = new Builder();
+		b.buttons = this.buttons;
+		b.filename = this.filename;
+		b.numSetButtons = this.numSetButtons;
+		b.numTotalButtons = this.numTotalButtons;
+		b.file = this.file;
+	      try {
+	          FileOutputStream fileOut =
+	          new FileOutputStream("src/configFiles/" + filename + ".ser");
+	          ObjectOutputStream out = new ObjectOutputStream(fileOut);
+	          out.writeObject(b);
+	          out.close();
+	          fileOut.close();
+	       } catch (IOException i) {
+	          i.printStackTrace();
+	       }
+	    }
 
 	@Override
 	public void start(Stage primaryStage) throws Exception {
 		buildWelcomeScreen(primaryStage);
-		// System.out.println(numButtonReturn());
-		// loadImage(primaryStage);
 	}
 
 	@Override
@@ -449,7 +479,7 @@ public class Builder extends Application implements TalkBoxConfiguration{		//cla
 	@Override
 	public Path getRelativePathToAudioFiles() {
 		// TODO Auto-generated method stub
-		Path path = FileSystems.getDefault().getPath("src/resouces");
+		Path path = FileSystems.getDefault().getPath("src/resources");
 		return path;
 	}
 
