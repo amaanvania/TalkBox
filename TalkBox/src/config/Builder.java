@@ -1,10 +1,12 @@
 package config;
 
+import java.awt.Desktop;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
 
@@ -204,10 +206,50 @@ public class Builder extends Application implements TalkBoxConfiguration{		//cla
 		
 	}
 
-	public ToolBar buildToolbar() { // method which builds and returns a Toolbar
-		Button x = new Button("Save"); // save button
-		x.setTooltip(new Tooltip("Click to Save File"));
-		x.setOnMouseClicked(new EventHandler<MouseEvent>() { // action listener
+	public ToolBar buildTopToolbar() { // method which builds and returns a Toolbar
+		Button help = new Button("Help"); // help button
+		help.setId("help-config");
+		help.setTooltip(new Tooltip("Opens the User Manual"));
+		help.setOnAction(new EventHandler<ActionEvent>() {
+			   @Override public void handle(ActionEvent e) {
+			        try {
+			            Desktop.getDesktop().browse(new URI("https://github.com/amaanvania/TalkBox/blob/master/Documentation/Talk%20Box%20User%20Manual.pdf"));
+			        } catch (IOException e1) {
+			            e1.printStackTrace();
+			        } catch (URISyntaxException e1) {
+			            e1.printStackTrace();
+			        }
+			        }
+			    }
+			);
+		ToolBar toolBar = new ToolBar(help // add help button to toolbar
+		);
+
+		toolBar.setPrefSize(200, 20);
+		toolBar.setId("top-toolbar-config");
+		return toolBar;
+	}
+	
+	public ToolBar buildBotToolbar() { // method which builds and returns the bot Toolbar
+		Button play = new Button("Play"); // play button
+		play.setId("play-config");
+		play.setTooltip(new Tooltip("Click to Open this configuration in the TalkBox App"));
+		play.setOnMouseClicked(new EventHandler<MouseEvent>() { // action listener
+																// for mouse
+																// click
+			public void handle(MouseEvent me) {
+				try {
+					buildPlayButton(new Stage());
+
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		});
+		Button save = new Button("Save"); // save button
+		save.setId("save-config");
+		save.setTooltip(new Tooltip("Click to Save File"));
+		save.setOnMouseClicked(new EventHandler<MouseEvent>() { // action listener
 																// for mouse
 																// click
 			public void handle(MouseEvent me) {
@@ -219,10 +261,10 @@ public class Builder extends Application implements TalkBoxConfiguration{		//cla
 				}
 			}
 		});
-		ToolBar toolBar = new ToolBar(x // add save button to toolbar
+		ToolBar toolBar = new ToolBar(play, save // add save button to toolbar
 		);
-
 		toolBar.setPrefSize(200, 20);
+		toolBar.setId("bot-toolbar-config");
 		return toolBar;
 	}
 
@@ -312,12 +354,13 @@ public class Builder extends Application implements TalkBoxConfiguration{		//cla
 			GridPane.setConstraints(iv1, i % 6, 4 + 2 * increment);		//sets images in correct positions
 			gridpane.getChildren().addAll(iv1, edit);
 		}
-		ToolBar bar = buildToolbar();		//adds toolbar to GUI
-		Button play = buildPlayButton(new Stage()); //adds playButton to GUI
+		ToolBar topToolBar = buildTopToolbar();		//adds toolbar to the top of the GUI
+		ToolBar botToolBar = buildBotToolbar();		//adds toolbar to the bottom of the GUI
+	
 		StackPane a = new StackPane();
-		a.getChildren().addAll(gridpane, play, bar);	//adds all elements to a stackpane
-		StackPane.setAlignment(bar, Pos.TOP_LEFT);		
-		StackPane.setAlignment(play, Pos.BOTTOM_RIGHT);
+		a.getChildren().addAll(gridpane, botToolBar, topToolBar);	//adds all elements to a stackpane
+		StackPane.setAlignment(topToolBar, Pos.TOP_LEFT);		
+		StackPane.setAlignment(botToolBar, Pos.BOTTOM_CENTER);
 		StackPane.setAlignment(gridpane, Pos.BOTTOM_CENTER);
 		Scene scene = new Scene(a);
 		String css = this.getClass().getResource("/resources/buttonstyle.css").toExternalForm();
