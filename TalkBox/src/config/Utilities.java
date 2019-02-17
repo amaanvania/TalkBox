@@ -16,6 +16,7 @@ public class Utilities { //class for some helpful utilities with static methods
 	public static String text;
 	public static String AudioPath;
 	public static String ImagePath;
+	public static String defaultPath;
 
 	public static String fileChoose(Stage mainStage) { //method to prompt filechooser
 		FileChooser fileChooser = new FileChooser();
@@ -31,9 +32,12 @@ public class Utilities { //class for some helpful utilities with static methods
 		FileChooser fileChooser = new FileChooser();
 		FileChooser.ExtensionFilter extFilter = (new ExtensionFilter("TalkBox File","*.talk")); //sets .talk extension
 		fileChooser.getExtensionFilters().add(extFilter);
-		fileChooser.setInitialDirectory(new File("src/configFiles/")); //initial dir is src/configFiles
+		if(defaultPath == null)
+			fileChooser.setInitialDirectory(new File("src/configFiles/")); //initial dir is src/configFiles
+		else fileChooser.setInitialDirectory(new File(defaultPath));
 		File selectedFile = fileChooser.showOpenDialog(mainStage);
 		if (selectedFile != null) {
+			defaultPath = selectedFile.getParent();
 			return selectedFile;
 		}
 		return null;

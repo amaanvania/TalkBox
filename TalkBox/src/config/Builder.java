@@ -60,7 +60,7 @@ public class Builder extends Application implements TalkBoxConfiguration {
 	public AudioButton[] buttons;
 	public String filename;
 	public transient int inc;
-	public File file;
+	File file;
 
 	public Builder() {
 		this.numTotalButtons = 0;
@@ -314,7 +314,7 @@ public class Builder extends Application implements TalkBoxConfiguration {
 																// click
 			public void handle(MouseEvent me) {
 				if (file == null)
-					file = Utilities.configFileSave(new Stage());
+				file = Utilities.configFileSave(new Stage());
 				saveSerializedFile(); // append each button to file
 
 			}
