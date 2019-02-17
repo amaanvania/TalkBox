@@ -8,6 +8,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.stage.FileChooser;
+import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Stage;
 
 public class Utilities { //class for some helpful utilities with static methods
@@ -28,8 +29,21 @@ public class Utilities { //class for some helpful utilities with static methods
 	
 	public static File configFileChoose(Stage mainStage) { //method to prompt filechooser
 		FileChooser fileChooser = new FileChooser();
+		FileChooser.ExtensionFilter extFilter = (new ExtensionFilter("TalkBox File","*.talk"));
+		fileChooser.getExtensionFilters().add(extFilter);
 		fileChooser.setInitialDirectory(new File("src/configFiles/")); //initial dir is src/configFiles
 		File selectedFile = fileChooser.showOpenDialog(mainStage);
+		if (selectedFile != null) {
+			return selectedFile;
+		}
+		return null;
+	}
+	
+	public static File configFileSave(Stage mainStage) { //method to prompt filechooser
+		FileChooser fileChooser = new FileChooser();
+		FileChooser.ExtensionFilter extFilter = (new ExtensionFilter("TalkBox File","*.talk"));
+		fileChooser.getExtensionFilters().add(extFilter);
+		File selectedFile = fileChooser.showSaveDialog(mainStage);
 		if (selectedFile != null) {
 			return selectedFile;
 		}

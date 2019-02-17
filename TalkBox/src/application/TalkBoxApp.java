@@ -50,7 +50,6 @@ public class TalkBoxApp{	//class which builds GUI for talkbox application
 			iv1.setCache(true);
 			iv1.setOnMouseClicked(new EventHandler<MouseEvent>() {
 			    public void handle(MouseEvent me) {
-					
 					File f = new File(b.getAudioPath());
 					URI u = f.toURI();
 					Media sound = new Media(u.toString());
