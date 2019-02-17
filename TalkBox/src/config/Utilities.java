@@ -29,7 +29,7 @@ public class Utilities { //class for some helpful utilities with static methods
 	
 	public static File configFileChoose(Stage mainStage) { //method to prompt filechooser
 		FileChooser fileChooser = new FileChooser();
-		FileChooser.ExtensionFilter extFilter = (new ExtensionFilter("TalkBox File","*.talk"));
+		FileChooser.ExtensionFilter extFilter = (new ExtensionFilter("TalkBox File","*.talk")); //sets .talk extension
 		fileChooser.getExtensionFilters().add(extFilter);
 		fileChooser.setInitialDirectory(new File("src/configFiles/")); //initial dir is src/configFiles
 		File selectedFile = fileChooser.showOpenDialog(mainStage);

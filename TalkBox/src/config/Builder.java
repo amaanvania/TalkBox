@@ -60,7 +60,7 @@ public class Builder extends Application implements TalkBoxConfiguration {
 	public AudioButton[] buttons;
 	public String filename;
 	public transient int inc;
-	File file;
+	public File file;
 
 	public Builder() {
 		this.numTotalButtons = 0;

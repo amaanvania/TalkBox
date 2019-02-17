@@ -11,7 +11,11 @@ import javafx.stage.Stage;
  *
  */
 public class AudioButton implements Serializable{		//class that defines AudioButton object
-								//which contains a name, audiopath, and imagepath
+								/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	//which contains a name, audiopath, and imagepath
 	/**
 	 * name for the AudioButton
 	 */
