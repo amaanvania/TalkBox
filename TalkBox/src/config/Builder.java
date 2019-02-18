@@ -259,7 +259,25 @@ public class Builder extends Application implements TalkBoxConfiguration {
 				}
 			}
 		});
-		ToolBar toolBar = new ToolBar(help // add help button to toolbar
+		
+		Button contact = new Button("Contact"); // contact button
+		contact.setId("contact-wiki");
+		contact.setTooltip(new Tooltip("Opens contact wiki"));
+		contact.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent e) {
+				try {
+					Desktop.getDesktop().browse(new URI(
+							"https://github.com/amaanvania/TalkBox/wiki"));
+				} catch (IOException e1) {
+					e1.printStackTrace();
+				} catch (URISyntaxException e1) {
+					e1.printStackTrace();
+				}
+			}
+		});
+		
+		ToolBar toolBar = new ToolBar(help, contact // add help button to toolbar
 		);
 
 		toolBar.setPrefSize(200, 20);
