@@ -293,6 +293,20 @@ public class Builder extends Application implements TalkBoxConfiguration {
 																			// the
 																			// bot
 																			// Toolbar
+		Button play = playBtn(primaryStage);
+		Button save = saveBtn();
+		ToolBar toolBar = new ToolBar(play, save // add save button to toolbar
+		);
+		toolBar.setPrefSize(200, 20);
+		toolBar.setId("bot-toolbar-config");
+		return toolBar;
+	}
+
+	/**
+	 * @param primaryStage
+	 * @return
+	 */
+	private Button playBtn(Stage primaryStage) {
 		Button play = new Button("Play"); // play button
 		play.setId("play-config");
 		play.setTooltip(new Tooltip("Click to Open this configuration in the TalkBox App"));
@@ -323,6 +337,13 @@ public class Builder extends Application implements TalkBoxConfiguration {
 
 			}
 		});
+		return play;
+	}
+
+	/**
+	 * @return returns a save button that has the functionality to save the current state of the application
+	 */
+	private Button saveBtn() {
 		Button save = new Button("Save"); // save button
 		save.setId("save-config");
 		save.setTooltip(new Tooltip("Click to Save File"));
@@ -337,11 +358,7 @@ public class Builder extends Application implements TalkBoxConfiguration {
 
 			}
 		});
-		ToolBar toolBar = new ToolBar(play, save // add save button to toolbar
-		);
-		toolBar.setPrefSize(200, 20);
-		toolBar.setId("bot-toolbar-config");
-		return toolBar;
+		return save;
 	}
 
 	/*
@@ -379,7 +396,7 @@ public class Builder extends Application implements TalkBoxConfiguration {
 			iv1.setCache(true);
 			TextField textField;
 			textField = (buttons[i] == null) ? new TextField("") : new TextField(currentButton.getName());
-			Button edit = (buttons[i] == null) ? new Button("Edit Button:") : new Button(textField.getText());
+			Button edit = (buttons[i] == null) ? new Button("Edit") : new Button(textField.getText());
 			edit.setPrefSize(100, 20);
 			edit.setTooltip(new Tooltip("Click to Edit Button"));
 			edit.setOnAction(new EventHandler<ActionEvent>() { // event handler
