@@ -5,7 +5,7 @@
 -fx-focus-color: #0093FF;
 -fx-control-inner-background: #FFFFFF;
 -fx-text-base-color: #FFFFFF;
--fx-background-color:#555555;
+-fx-background-color:Black;
 -fx-border-color: White;
 -fx-inner-border: linear-gradient(to bottom, derive(-fx-color,73.6%) 0%, derive(-fx-color,29.200000000000003%) 100%);
 -fx-body-color: linear-gradient( to bottom, derive(-fx-color, 34.0%) 0%, derive(-fx-color, -18.0%) 100%);
@@ -28,7 +28,41 @@
 -fx-focus-color: #FF0000;
 -fx-background-color: #ED9C28, #0187ab;
 }
+#image-config{
+	-fx-background-color: Black;
+}
+#image-config:hover{
+	-fx-border-color: Black;
+}
+#edit-config{
+	-fx-background-color: Black;
+}
+#edit-config:hover{
+	-fx-border-color: Black;
+}
 
+#record-config {
+	-fx-background-color: Red;
+	-fx-text-fill: black;
+    -fx-font-size: 30px;
+}
+#record-config:hover {
+	-fx-border-color: Black;
+}
+#record-config:focused{
+-fx-color:Green;
+-fx-background-color: Green;
+-fx-background-insets: -1.4, 0, 1, 2;
+-fx-background-radius: 0;	
+-fx-text-fill: black;
+-fx-font-size: 30px;
+}
+#recordAudio-config{
+	-fx-background-color: Black;
+}
+#recordAudio-config:hover {
+	-fx-border-color: Black;
+}
 #top-toolbar-config {
 	-fx-border-color: LightGray;
 	-fx-padding: 0 0 2 0;
@@ -55,7 +89,7 @@
 }
 
 #help-config {
-	
+	-fx-background-color: Black;
 }
 
 #help-config:hover {

@@ -1,8 +1,7 @@
 package config;
 
 import java.io.File;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
+
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
@@ -17,6 +16,8 @@ public class Utilities { //class for some helpful utilities with static methods
 	public static String AudioPath;
 	public static String ImagePath;
 	public static String defaultPath;
+	public static int numSeconds;
+	public static String recordedAudioPath;
 
 	public static String fileChoose(Stage mainStage) { //method to prompt filechooser
 		FileChooser fileChooser = new FileChooser();
@@ -53,7 +54,19 @@ public class Utilities { //class for some helpful utilities with static methods
 		}
 		return null;
 	}
-
+	
+	public static File recordFileSave(Stage mainStage) { //method to prompt filechooser
+		FileChooser fileChooser = new FileChooser();
+		fileChooser.setInitialDirectory(new File("src/resources/"));
+		FileChooser.ExtensionFilter extFilter = (new ExtensionFilter("Audio File","*.wav"));
+		fileChooser.getExtensionFilters().add(extFilter);
+		File selectedFile = fileChooser.showSaveDialog(mainStage);
+		if (selectedFile != null) {
+			return selectedFile;
+		}
+		return null;
+	}
+	
 	public static GridPane setEditPrompt(Stage primaryStage) { //method which builds edit prompt
 		GridPane gridpane = new GridPane();
 		gridpane.setVgap(10);
@@ -70,28 +83,22 @@ public class Utilities { //class for some helpful utilities with static methods
 		// Set GridPaneConstraints
 		setGridPaneConstraints(audio, image, label1, audioField, imageField);
 		gridpane.getChildren().addAll(label1, audio, image,imageField, audioField);  //add all elements to gridpane and set their positions
-		image.setOnAction(new EventHandler<ActionEvent>() { //event handler which opens up filechooser
-			@Override
-			public void handle(ActionEvent e) {
+		image.setOnAction(e -> { //event handler which opens up filechooser
 				AudioButton b = new AudioButton();
 				b.chooseImagePath();
 				imageField.setText(b.getImagePath());
 				ImagePath = b.getImagePath();
-			}
 		});
-		audio.setOnAction(new EventHandler<ActionEvent>() { //event handler which opens up filechooser
-			@Override
-			public void handle(ActionEvent e) {
+		audio.setOnAction(e -> { //event handler which opens up filechooser
 				AudioButton b = new AudioButton();
 				b.chooseAudioPath();
 				audioField.setText(b.getAudioPath());
 				AudioPath = b.getAudioPath();
-			}
 		});
 		return gridpane;
 
 	}
-
+	
 	private static void setGridPaneConstraints(Button audio, Button image, Label label1, TextField audioField,
 			TextField imageField) {
 		GridPane.setConstraints(label1, 0, 0);
@@ -103,5 +110,9 @@ public class Utilities { //class for some helpful utilities with static methods
 
 	public static String getText() {
 		return text;
+	}
+	
+	public static int getNumSeconds(){
+		return numSeconds;
 	}
 }

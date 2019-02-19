@@ -17,8 +17,6 @@ import application.TalkBoxApp;
 import javafx.application.Application;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
@@ -34,8 +32,6 @@ import javafx.scene.control.Tooltip;
 import javafx.scene.control.Slider;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.MouseButton;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
@@ -94,20 +90,13 @@ public class Builder extends Application implements TalkBoxConfiguration {
 	public Button buildChooseExisting(Stage primaryStage) {
 		Button button = new Button("Choose Existing");
 		button.setTooltip(new Tooltip("Click to choose existing Project"));
-		button.setOnAction(new EventHandler<ActionEvent>() { // actionevent upon
-																// clicking
-																// "submit"
-																// button
-			@Override
-			public void handle(ActionEvent e) {
-				try {
-					openSerializedFile(primaryStage);
-				} catch (IOException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
+		button.setOnAction(e -> {
+			try {
+				openSerializedFile(primaryStage);
+			} catch (IOException e1) {
 			}
 		});
+
 		return button;
 
 	}
@@ -118,18 +107,10 @@ public class Builder extends Application implements TalkBoxConfiguration {
 	public Button buildNewProject(Stage primaryStage) {
 		Button button = new Button("New Project");
 		button.setTooltip(new Tooltip("Click to Start New Project"));
-		button.setOnAction(new EventHandler<ActionEvent>() { // actionevent upon
-																// clicking
-																// "submit"
-																// button
-			@Override
-			public void handle(ActionEvent e) {
-				try {
-					newButtonPrompt(primaryStage);
-				} catch (FileNotFoundException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
+		button.setOnAction(e -> {
+			try {
+				newButtonPrompt(primaryStage);
+			} catch (FileNotFoundException e1) {
 			}
 		});
 		return button;
@@ -163,18 +144,12 @@ public class Builder extends Application implements TalkBoxConfiguration {
 		FlowPane s = buildSlider();
 		Button submit = new Button("Submit");
 		submit.setTooltip(new Tooltip("Click Submit to Start Configuration"));
-		submit.setOnAction(new EventHandler<ActionEvent>() { // actionevent upon
-																// clicking
-																// "submit"
-																// button
-			@Override
-			public void handle(ActionEvent e) {
-				try {
-					buildInitialGui(primaryStage);
-				} catch (IOException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
+		submit.setOnAction(e -> {
+			try {
+				buildInitialGui(primaryStage);
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
 			}
 		});
 		HBox hb2 = new HBox();
@@ -246,28 +221,38 @@ public class Builder extends Application implements TalkBoxConfiguration {
 		Button help = new Button("Help"); // help button
 		help.setId("help-config");
 		help.setTooltip(new Tooltip("Opens the User Manual"));
-		help.setOnAction(new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(ActionEvent e) {
-				try {
-					Desktop.getDesktop().browse(new URI(
-							"https://github.com/amaanvania/TalkBox/blob/master/Documentation/Talk%20Box%20User%20Manual.pdf"));
-				} catch (IOException e1) {
-					e1.printStackTrace();
-				} catch (URISyntaxException e1) {
-					e1.printStackTrace();
-				}
+		help.setOnAction(e -> {
+			try {
+				Desktop.getDesktop().browse(new URI(
+						"https://github.com/amaanvania/TalkBox/blob/master/Documentation/Talk%20Box%20User%20Manual.pdf"));
+			} catch (IOException e1) {
+				e1.printStackTrace();
+			} catch (URISyntaxException e1) {
+				e1.printStackTrace();
 			}
 		});
-		ToolBar toolBar = new ToolBar(help // add help button to toolbar
-		);
+		Button recordAudio = new Button("Record Audio");
+		recordAudio.setId("recordAudio-config");
+		recordAudio.setTooltip(new Tooltip("Click to Record Audio"));
+		recordAudio.setOnAction(e -> recordHandle());
+		ToolBar toolBar = new ToolBar(recordAudio,help);
 
 		toolBar.setPrefSize(200, 20);
 		toolBar.setId("top-toolbar-config");
 		return toolBar;
 	}
-
-	public ToolBar buildBotToolbar(Stage primaryStage) throws IOException { // method
+	public void recordHandle(){
+		AudioRecord a = new AudioRecord();
+		Stage x = new Stage();
+		Button record = a.buildButton(x);
+		record.setId("record-config");
+		Scene scene = new Scene(record,150,150);
+		String css = this.getClass().getResource("/resources/buttonstyle.css").toExternalForm();
+		scene.getStylesheets().add(css);
+		x.setScene(scene);
+		x.show();
+	}
+	public ToolBar buildBotToolbar() throws IOException { // method
 																			// which
 																			// builds
 																			// and
@@ -278,54 +263,66 @@ public class Builder extends Application implements TalkBoxConfiguration {
 		Button play = new Button("Play"); // play button
 		play.setId("play-config");
 		play.setTooltip(new Tooltip("Click to Open this configuration in the TalkBox App"));
-		play.setOnMouseClicked(new EventHandler<MouseEvent>() { // action
-																// listener
-																// for mouse
-																// click
-			public void handle(MouseEvent me) { // mouseevent handler which
-												// launches talkbox app
-				try {
-					if (getSetButtons() > 0) {
-						TalkBoxApp a = new TalkBoxApp(openSerializedFile(file));
-						GridPane b = a.getGridpane();
-						primaryStage.setTitle("TalkBox Application");
-						primaryStage.setScene(new Scene(b));
-						primaryStage.show();
-					} else {
-						Alert alert = new Alert(AlertType.WARNING);
-						alert.setTitle("Warning Dialog");
-						alert.setHeaderText("Warning! Null File");
-						alert.setContentText("Save file before attempting to Play");
-						alert.showAndWait();
-					}
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+		play.setOnMouseClicked(e -> {
+			try {
+				if (getSetButtons() > 0) {
+					TalkBoxApp a = new TalkBoxApp(openSerializedFile(file));
+					GridPane b = a.getGridpane();
+					Stage primaryStage = new Stage();
+					primaryStage.setTitle("TalkBox Application");
+					primaryStage.setScene(new Scene(b));
+					primaryStage.show();
+				} else {
+					Alert alert = new Alert(AlertType.WARNING);
+					alert.setTitle("Warning Dialog");
+					alert.setHeaderText("Warning! Null File");
+					alert.setContentText("Save file before attempting to Play");
+					alert.showAndWait();
 				}
-
+			} catch (IOException z) {
+				// TODO Auto-generated catch block
+				z.printStackTrace();
 			}
 		});
 		Button save = new Button("Save"); // save button
 		save.setId("save-config");
 		save.setTooltip(new Tooltip("Click to Save File"));
-		save.setOnMouseClicked(new EventHandler<MouseEvent>() { // action
-																// listener
-																// for mouse
-																// click
-			public void handle(MouseEvent me) {
-				if (file == null)
+		save.setOnMouseClicked(e -> {
+			if (file == null)
 				file = Utilities.configFileSave(new Stage());
-				saveSerializedFile(); // append each button to file
-
-			}
+			saveSerializedFile(); // append each button to file
 		});
-		ToolBar toolBar = new ToolBar(play, save // add save button to toolbar
-		);
+		ToolBar toolBar = new ToolBar(play, save);
 		toolBar.setPrefSize(200, 20);
 		toolBar.setId("bot-toolbar-config");
 		return toolBar;
 	}
-
+	public ImageView buildImageView(){
+		ImageView iv1 = new ImageView();
+		iv1.setId("image-config");
+		iv1.setFitWidth(100);
+		iv1.setPreserveRatio(true);
+		iv1.setSmooth(true);
+		iv1.setCache(true);
+		return iv1;
+	}
+	
+	public void editHandle(Stage x,Button submit,TextField textField){
+		GridPane g = Utilities.setEditPrompt(x);	
+		GridPane.setConstraints(submit, 4, 4);
+		GridPane.setConstraints(textField, 1, 0);
+		g.getChildren().add(submit);
+		g.getChildren().add(textField);
+		x.setScene(new Scene(g));
+		x.show();
+	}
+	public void imageHandle(String audioPath){
+		File f = new File(audioPath);
+		URI u = f.toURI();
+		Media sound = new Media(u.toString());
+		MediaPlayer mediaPlayer = new MediaPlayer(sound);
+		mediaPlayer.play();
+	}
 	/*
 	 * Method which builds the configuration GUI Allowing user to view and edit
 	 * each button
@@ -339,143 +336,30 @@ public class Builder extends Application implements TalkBoxConfiguration {
 		gridpane.setPrefSize(500, 500);
 		gridpane.setVgap(10);
 		gridpane.setHgap(10);
-		Image img = new Image(new FileInputStream("src/resources/PlusSign.png")); // simple
-																					// +
-																					// sign
-																					// image
+		Image img = new Image(new FileInputStream("src/resources/PlusSign.png"));
 		for (int i = 0; i < numTotalButtons; i++) {
 			int k = i;
-			if (i > 0 && i % 6 == 0) {
-				increment++; // incrementer to define number of rows
-			}
-			AudioButton currentButton;
-			currentButton = (buttons[i] == null) ? new AudioButton() : buttons[i];
-			ImageView iv1 = new ImageView();
-			if (buttons[i] == null)
-				iv1.setImage(img);
-			else
-				iv1.setImage(new Image(new FileInputStream(buttons[i].getImagePath())));
-			iv1.setFitWidth(100);
-			iv1.setPreserveRatio(true);
-			iv1.setSmooth(true);
-			iv1.setCache(true);
+			if (i > 0 && i % 6 == 0) increment++; // incrementer to define number of rows
+			AudioButton currentButton = (buttons[i] == null) ? new AudioButton() : buttons[i];
+			ImageView iv1 = buildImageView();
+			if (buttons[i] == null)iv1.setImage(img);
+			else iv1.setImage(new Image(new FileInputStream(buttons[i].getImagePath())));
 			TextField textField;
 			textField = (buttons[i] == null) ? new TextField("") : new TextField(currentButton.getName());
-			Button edit = (buttons[i] == null) ? new Button("Edit Button:") : new Button(textField.getText());
-			edit.setPrefSize(100, 20);
-			edit.setTooltip(new Tooltip("Click to Edit Button"));
-			edit.setOnAction(new EventHandler<ActionEvent>() { // event handler
-																// for "edit"
-																// button
-																// allowing user
-																// to edit
-																// buttons
-				@Override
-				public void handle(ActionEvent event) {
-					Stage x = new Stage();
-					GridPane g = Utilities.setEditPrompt(x);
-					Button submit = new Button("Submit");
-					GridPane.setConstraints(submit, 4, 4);
-					GridPane.setConstraints(textField, 1, 0);
-					g.getChildren().add(submit);
-					g.getChildren().add(textField);
-					x.setScene(new Scene(g));
-					x.show();
-					submit.setOnAction(new EventHandler<ActionEvent>() { // event
-																			// handler
-																			// for
-																			// submit
-																			// within
-																			// edit
-																			// gui
-						@Override
-						public void handle(ActionEvent e) {
-							;
-							try {
-								// if(numSetButtons <
-								// numTotalButtons)numSetButtons++;
-								edit.setText(textField.getText()); // sets text
-																	// of button
-																	// to user
-																	// input
-								Image n = new Image(new FileInputStream(Utilities.ImagePath)); // sets
-																								// imagePath
-																								// to
-																								// user
-																								// input
-								iv1.setImage(n);
-								iv1.setFitWidth(100);
-								iv1.setPreserveRatio(true);
-								iv1.setSmooth(true);
-								iv1.setCache(true);
-								Tooltip.install(iv1, new Tooltip("Click to Play Sound"));
-								currentButton.setName(textField.getText());// assigns
-																			// current
-																			// input
-																			// to
-																			// an
-																			// audiobutton
-								currentButton.setImagePath(Utilities.ImagePath);
-								currentButton.setAudioPath(Utilities.AudioPath);
-								buttons[k] = currentButton;
-								iv1.setOnMouseClicked(new EventHandler<MouseEvent>() { // adds
-																						// event
-																						// handler
-																						// to
-																						// picture,
-																						// allowing
-																						// user
-																						// click
-																						// to
-																						// generate
-																						// sound
-									public void handle(MouseEvent me) {
-										if (me.getButton().equals(MouseButton.PRIMARY)) {
-											File f = new File(buttons[k].getAudioPath());
-											URI u = f.toURI();
-											Media sound = new Media(u.toString());
-											MediaPlayer mediaPlayer = new MediaPlayer(sound);
-											mediaPlayer.play();// method which
-																// allows sound
-																// to be
-																// outputted
-										}
-									}
-								});
-
-							} catch (FileNotFoundException e1) {
-								e1.printStackTrace();
-							}
-							x.close();
-						}
-
-					});
-				}
-
-			});
-			GridPane.setConstraints(edit, i % 6, 5 + 2 * increment); // sets
-																		// edit
-																		// buttons
-																		// in
-																		// correct
-																		// positions
-			GridPane.setConstraints(iv1, i % 6, 4 + 2 * increment); // sets
-																	// images in
-																	// correct
-																	// positions
+			Button edit = buildButton(i, textField);
+			Button submit = new Button("Submit");
+			Stage x = new Stage();
+			edit.setOnAction(e -> editHandle(x,submit,textField));
+			submit.setOnAction(event -> submitHandle(k, currentButton, iv1, textField, edit, x));
+			iv1.setOnMouseClicked(e -> imageHandle(buttons[k].getAudioPath()));
+			GridPane.setConstraints(edit, i % 6, 5 + 2 * increment);
+			GridPane.setConstraints(iv1, i % 6, 4 + 2 * increment);
 			gridpane.getChildren().addAll(iv1, edit);
 		}
-		ToolBar topToolBar = buildTopToolbar(); // adds toolbar to the top of
-												// the GUI
-		ToolBar botToolBar = buildBotToolbar(new Stage()); // adds toolbar to
-															// the bottom of the
-															// GUI
-
+		ToolBar topToolBar = buildTopToolbar(); 
+		ToolBar botToolBar = buildBotToolbar();
 		StackPane a = new StackPane();
-		a.getChildren().addAll(gridpane, botToolBar, topToolBar); // adds all
-																	// elements
-																	// to a
-																	// stackpane
+		a.getChildren().addAll(gridpane, botToolBar, topToolBar);
 		StackPane.setAlignment(topToolBar, Pos.TOP_LEFT);
 		StackPane.setAlignment(botToolBar, Pos.BOTTOM_CENTER);
 		StackPane.setAlignment(gridpane, Pos.BOTTOM_CENTER);
@@ -484,6 +368,31 @@ public class Builder extends Application implements TalkBoxConfiguration {
 		scene.getStylesheets().add(css);
 		primaryStage.setScene(scene);
 		primaryStage.show();
+	}
+
+	private Button buildButton(int i, TextField textField) {
+		Button edit = (buttons[i] == null) ? new Button("Edit Button:") : new Button(textField.getText());
+		edit.setPrefSize(100, 20);
+		edit.setId("edit-config");
+		edit.setTooltip(new Tooltip("Click to Edit Button"));
+		return edit;
+	}
+
+	private void submitHandle(int k, AudioButton currentButton, ImageView iv1, TextField textField, Button edit,
+			Stage x) {
+		try {
+			edit.setText(textField.getText());
+			Image n = new Image(new FileInputStream(Utilities.ImagePath)); // sets
+			iv1.setImage(n);
+			Tooltip.install(iv1, new Tooltip("Click to Play Sound"));
+			currentButton.setName(textField.getText());
+			currentButton.setImagePath(Utilities.ImagePath);
+			currentButton.setAudioPath(Utilities.AudioPath);
+			buttons[k] = currentButton;
+		} catch (FileNotFoundException e1) {
+			e1.printStackTrace();
+		}
+		x.close();
 	}
 
 	/*
