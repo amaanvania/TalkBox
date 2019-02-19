@@ -234,8 +234,21 @@ public class Builder extends Application implements TalkBoxConfiguration {
 		Button recordAudio = new Button("Record Audio");
 		recordAudio.setId("recordAudio-config");
 		recordAudio.setTooltip(new Tooltip("Click to Record Audio"));
-		recordAudio.setOnAction(e -> recordHandle());
-		ToolBar toolBar = new ToolBar(recordAudio,help);
+		recordAudio.setOnAction(e -> recordHandle());		
+		Button contact = new Button("Contact"); // contact button
+		contact.setId("contact-wiki");
+		contact.setTooltip(new Tooltip("Opens contact wiki"));
+		contact.setOnAction( e-> {
+					try {
+						Desktop.getDesktop().browse(new URI("https://github.com/amaanvania/TalkBox/wiki"));
+					} catch (IOException | URISyntaxException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+		});
+		
+		ToolBar toolBar = new ToolBar(recordAudio,help, contact // add help button to toolbar
+		);
 
 		toolBar.setPrefSize(200, 20);
 		toolBar.setId("top-toolbar-config");
@@ -260,6 +273,20 @@ public class Builder extends Application implements TalkBoxConfiguration {
 																			// the
 																			// bot
 																			// Toolbar
+		Button play = playBtn();
+		Button save = saveBtn();
+		ToolBar toolBar = new ToolBar(play, save // add save button to toolbar
+		);
+		toolBar.setPrefSize(200, 20);
+		toolBar.setId("bot-toolbar-config");
+		return toolBar;
+	}
+
+	/**
+	 * @param primaryStage
+	 * @return
+	 */
+	private Button playBtn() {
 		Button play = new Button("Play"); // play button
 		play.setId("play-config");
 		play.setTooltip(new Tooltip("Click to Open this configuration in the TalkBox App"));
@@ -284,6 +311,13 @@ public class Builder extends Application implements TalkBoxConfiguration {
 				z.printStackTrace();
 			}
 		});
+		return play;
+	}
+
+	/**
+	 * @return returns a save button that has the functionality to save the current state of the application
+	 */
+	private Button saveBtn() {
 		Button save = new Button("Save"); // save button
 		save.setId("save-config");
 		save.setTooltip(new Tooltip("Click to Save File"));
@@ -292,10 +326,7 @@ public class Builder extends Application implements TalkBoxConfiguration {
 				file = Utilities.configFileSave(new Stage());
 			saveSerializedFile(); // append each button to file
 		});
-		ToolBar toolBar = new ToolBar(play, save);
-		toolBar.setPrefSize(200, 20);
-		toolBar.setId("bot-toolbar-config");
-		return toolBar;
+		return save;
 	}
 	public ImageView buildImageView(){
 		ImageView iv1 = new ImageView();
