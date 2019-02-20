@@ -114,7 +114,7 @@ public class AudioButton implements Serializable{		//class that defines AudioBut
 	 * @see Utilities Utilities.java
 	 */
 	public void chooseAudioPath() {
-		this.AudioPath = Utilities.fileChoose(null);
+		this.AudioPath = Utilities.fileChoose(null, true);
 	}
 	
 	/**
@@ -123,7 +123,7 @@ public class AudioButton implements Serializable{		//class that defines AudioBut
 	 * @see Utilities Utilities.java
 	 */
 	public void chooseImagePath() {
-		this.ImagePath = Utilities.fileChoose(null); 
+		this.ImagePath = Utilities.fileChoose(null, false); 
 	}
 	
 	
