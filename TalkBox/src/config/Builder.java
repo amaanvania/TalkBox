@@ -149,7 +149,6 @@ public class Builder extends Application implements TalkBoxConfiguration {
 			try {
 				buildInitialGui(primaryStage);
 			} catch (IOException e1) {
-				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
 		});
@@ -243,7 +242,6 @@ public class Builder extends Application implements TalkBoxConfiguration {
 					try {
 						Desktop.getDesktop().browse(new URI("https://github.com/amaanvania/TalkBox/wiki"));
 					} catch (IOException | URISyntaxException e1) {
-						// TODO Auto-generated catch block
 						e1.printStackTrace();
 					}
 		});
@@ -311,7 +309,6 @@ public class Builder extends Application implements TalkBoxConfiguration {
 					alert.showAndWait();
 				}
 			} catch (IOException z) {
-				// TODO Auto-generated catch block
 				z.printStackTrace();
 			}
 		});
@@ -524,32 +521,27 @@ public class Builder extends Application implements TalkBoxConfiguration {
 
 	@Override
 	public int getNumberOfAudioButtons() {
-		// TODO Auto-generated method stub
 		return numSetButtons;
 	}
 
 	@Override
 	public int getNumberOfAudioSets() {
-		// TODO Auto-generated method stub
 		return numSetButtons;
 	}
 
 	@Override
 	public int getTotalNumberOfButtons() {
-		// TODO Auto-generated method stub
 		return numTotalButtons;
 	}
 
 	@Override
 	public Path getRelativePathToAudioFiles() {
-		// TODO Auto-generated method stub
 		Path path = FileSystems.getDefault().getPath("src/resources");
 		return path;
 	}
 
 	@Override
 	public String[][] getAudioFileNames() {
-		// TODO Auto-generated method stub
 		String[][] result = new String[getNumberOfAudioButtons()][getNumberOfAudioSets()];
 		for (int i = 0; i < buttons.length; i++) {
 			result[i][0] = buttons[i].getAudioPath();

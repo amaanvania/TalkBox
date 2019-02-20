@@ -171,19 +171,18 @@ public class TalkBoxApp extends Application {
 	@Override
 	public void start(Stage primaryStage) {
 		//pane = FXMLLoader.load(getClass().getResource("/application/TalkBoxApp.fxml"));
-		initializeApp(primaryStage);
+		buildWelcomeScreen(primaryStage);
 	}
 
 	/**
 	 * @param primaryStage
 	 */
-	private void initializeApp(Stage primaryStage) {
+	private void buildWelcomeScreen(Stage primaryStage) {
 		appPane = new BorderPane();
 		mainFlow = new FlowPane();
 		topBar = buildTopToolbar();
 		appPane.setCenter(mainFlow);
 		appPane.setTop(topBar);
-		buildWelcomeScreen();
 		
 		Scene scene = new Scene(appPane, 900, 650);
 		scene.getStylesheets().add(getClass().getResource("/application/TalkBoxApp.css").toExternalForm());
@@ -197,13 +196,6 @@ public class TalkBoxApp extends Application {
 	 */
 	private ToolBar buildTopToolbar() {
 		return new ToolBar(new Button("Placeholder"));
-	}
-
-	/**
-	 * STILL NEED TO BUILD THE WELCOME SCREEN!
-	 */
-	private void buildWelcomeScreen() {
-		
 	}
 
 }
