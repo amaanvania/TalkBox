@@ -31,6 +31,7 @@ import javafx.scene.control.Tooltip;
 import javafx.scene.control.Slider;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
@@ -297,7 +298,7 @@ public class Builder extends Application implements TalkBoxConfiguration {
 			try {
 				if (getSetButtons() > 0) {
 					TalkBoxApp a = new TalkBoxApp(openSerializedFile(file));
-					GridPane b = a.getGridpane();
+					BorderPane b = a.getPane();
 					Stage primaryStage = new Stage();
 					primaryStage.setTitle("TalkBox Application");
 					primaryStage.setScene(new Scene(b));

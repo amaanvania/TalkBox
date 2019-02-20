@@ -20,8 +20,16 @@ public class Utilities { //class for some helpful utilities with static methods
 	public static String recordedAudioPath;
 	public static String resourcePath = System.getProperty("user.home") + File.separatorChar + "TalkBoxResources";
 
-	public static String fileChoose(Stage mainStage) { //method to prompt filechooser
+	public static String fileChoose(Stage mainStage, boolean pick) { //method to prompt filechooser
 		FileChooser fileChooser = new FileChooser();
+		if(pick == true) {
+			FileChooser.ExtensionFilter extFilter = (new ExtensionFilter("Audio File","*.wav","*.mp3","*.wma")); 
+			fileChooser.getExtensionFilters().add(extFilter);
+		}
+		else {
+			FileChooser.ExtensionFilter extFilter = (new ExtensionFilter("Image files","*.jpg","*.png","*.tif")); 
+			fileChooser.getExtensionFilters().add(extFilter);
+		}
 		new File(resourcePath).mkdirs();
 		fileChooser.setInitialDirectory(new File(resourcePath)); //initial dir is src/resources
 		File selectedFile = fileChooser.showOpenDialog(mainStage);
