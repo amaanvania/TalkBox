@@ -203,31 +203,7 @@ public class TalkBoxApp extends Application {
 	 * STILL NEED TO BUILD THE WELCOME SCREEN!
 	 */
 	private void buildWelcomeScreen() {
-		for (int i = 0; i < 7; i++) {
-			audioCard = new VBox();
-			audioCard.setPrefWidth(150);
-			audioCard.setPrefHeight(200);
-			cardFlow = new FlowPane();
-			cardFlow.setOrientation(Orientation.VERTICAL);
-			try {
-				img = new Image(new FileInputStream("src/resources/Penguins.jpg"));
-			} catch (FileNotFoundException e) {
-				e.printStackTrace();
-			}
-			imgv = new ImageView();
-			imgv.setImage(img);
-			imgv.setFitWidth(149);
-			imgv.setFitHeight(124);
-			imgv.setPreserveRatio(true);
-			imgv.setSmooth(true);
-			imgv.setCache(true);
-			play = new Button("Hello");
-			play.setPrefWidth(149);
-			play.setPrefHeight(74);
-			cardFlow.getChildren().addAll(imgv, play);
-			audioCard.getChildren().add(cardFlow);
-			mainFlow.getChildren().add(audioCard);
-		}
+		
 	}
 
 }
