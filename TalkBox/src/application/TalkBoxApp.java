@@ -167,35 +167,25 @@ public class TalkBoxApp extends Application {
 	public void setPane(BorderPane mainPane) {
 		this.appPane = mainPane;
 	}
+	
+
+	private ToolBar buildTopToolbar() {
+		return new ToolBar(new Button("Placeholder"));
+	}
 
 	@Override
 	public void start(Stage primaryStage) {
 		//pane = FXMLLoader.load(getClass().getResource("/application/TalkBoxApp.fxml"));
-		buildWelcomeScreen(primaryStage);
-	}
-
-	/**
-	 * @param primaryStage
-	 */
-	private void buildWelcomeScreen(Stage primaryStage) {
-		appPane = new BorderPane();
-		mainFlow = new FlowPane();
-		topBar = buildTopToolbar();
-		appPane.setCenter(mainFlow);
-		appPane.setTop(topBar);
-		
-		Scene scene = new Scene(appPane, 900, 650);
-		scene.getStylesheets().add(getClass().getResource("/application/TalkBoxApp.css").toExternalForm());
-		primaryStage.setTitle("TalkBox App");
-		primaryStage.setScene(scene);
-		primaryStage.show();
-	}
-
-	/**
-	 * @return
-	 */
-	private ToolBar buildTopToolbar() {
-		return new ToolBar(new Button("Placeholder"));
+		try {
+			Parent root = FXMLLoader.load(getClass().getResource("/application/WelcomeScreen.fxml"));
+			Scene scene = new Scene(root,900,650);
+			scene.getStylesheets().add(getClass().getResource("/application/WelcomeScreen.css").toExternalForm());
+			primaryStage.setTitle("TalkBox App");
+			primaryStage.setScene(scene);
+			primaryStage.show();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 }
