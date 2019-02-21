@@ -20,6 +20,7 @@ import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.MenuBar;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToolBar;
 import javafx.scene.image.Image;
@@ -67,8 +68,9 @@ public class TalkBoxApp extends Application {
 		appPane = new BorderPane();
 		mainFlow = new FlowPane();
 		topBar = buildTopToolbar();
+		MenuBar topMenu = builder.buildTopMenu();
 		appPane.setCenter(mainFlow);
-		appPane.setTop(topBar);
+		appPane.setTop(topMenu);
 		audioCard = new VBox();
 		audioCard.setPrefWidth(150);
 		audioCard.setPrefHeight(200);
@@ -95,6 +97,7 @@ public class TalkBoxApp extends Application {
 					URI u = f.toURI();
 					Media sound = new Media(u.toString());
 					MediaPlayer mediaPlayer = new MediaPlayer(sound);
+					mediaPlayer.setVolume(builder.volume);
 					mediaPlayer.play();
 				}
 			});
