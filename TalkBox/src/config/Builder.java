@@ -75,7 +75,8 @@ public class Builder extends Application implements TalkBoxConfiguration {
 	 * Method which builds the TalkBox image
 	 */
 	public ImageView buildImage() throws FileNotFoundException {
-		Image img = new Image(new FileInputStream("src/resources/talkbox.JPG"));
+		String s = getClass().getResource("/resources/talkbox.jpg").toExternalForm();
+		Image img = new Image(s);
 		ImageView iv1 = new ImageView();
 		iv1.setImage(img);
 		iv1.setFitWidth(300);
@@ -371,7 +372,8 @@ public class Builder extends Application implements TalkBoxConfiguration {
 		gridpane.setPrefSize(500, 500);
 		gridpane.setVgap(10);
 		gridpane.setHgap(10);
-		Image img = new Image(new FileInputStream("src/resources/PlusSign.png"));
+		String s = getClass().getResource("/resources/PlusSign.png").toExternalForm();
+		Image img = new Image(s);
 		for (int i = 0; i < numTotalButtons; i++) {
 			int k = i;
 			if (i > 0 && i % 6 == 0) increment++; // incrementer to define number of rows
@@ -543,7 +545,7 @@ public class Builder extends Application implements TalkBoxConfiguration {
 	@Override
 	public Path getRelativePathToAudioFiles() {
 		// TODO Auto-generated method stub
-		Path path = FileSystems.getDefault().getPath("src/resources");
+		Path path = FileSystems.getDefault().getPath("/resources");
 		return path;
 	}
 
