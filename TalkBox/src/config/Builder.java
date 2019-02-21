@@ -255,6 +255,7 @@ public class Builder extends Application implements TalkBoxConfiguration {
 		Menu volumes = new Menu("Volume");
 		CustomMenuItem volumesOne = new CustomMenuItem();
 		final Slider vSlider = new Slider(0, 100, 100); // volume slider
+		volume = 100; //initial value for volume
 		vSlider.valueProperty().addListener(new ChangeListener<Number>() {
 			@Override
 			public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
