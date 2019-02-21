@@ -25,7 +25,10 @@ import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
+import javafx.scene.control.CustomMenuItem;
 import javafx.scene.control.Label;
+import javafx.scene.control.Menu;
+import javafx.scene.control.MenuBar;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToolBar;
 import javafx.scene.control.Tooltip;
@@ -57,6 +60,7 @@ public class Builder extends Application implements TalkBoxConfiguration {
 	public AudioButton[] buttons;
 	public String filename;
 	public transient int inc;
+	public double volume;
 	File file;
 
 	public Builder() {
@@ -150,7 +154,6 @@ public class Builder extends Application implements TalkBoxConfiguration {
 			try {
 				buildInitialGui(primaryStage);
 			} catch (IOException e1) {
-				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
 		});
@@ -217,10 +220,12 @@ public class Builder extends Application implements TalkBoxConfiguration {
 		return layout;
 
 	}
-
-	public ToolBar buildTopToolbar() { // method which builds and returns a
-										// Toolbar
-		Button help = new Button("Help"); // help button
+	
+	public MenuBar buildTopMenu() {
+		Menu helps = new Menu("Help");
+        CustomMenuItem helpsOne = new CustomMenuItem();
+        CustomMenuItem helpsTwo = new CustomMenuItem();
+		Button help = new Button("User manual"); // help button
 		help.setId("help-config");
 		help.setTooltip(new Tooltip("Opens the User Manual"));
 		help.setOnAction(e -> {
@@ -233,10 +238,6 @@ public class Builder extends Application implements TalkBoxConfiguration {
 				e1.printStackTrace();
 			}
 		});
-		Button recordAudio = new Button("Record Audio");
-		recordAudio.setId("recordAudio-config");
-		recordAudio.setTooltip(new Tooltip("Click to Record Audio"));
-		recordAudio.setOnAction(e -> recordHandle());		
 		Button contact = new Button("Contact"); // contact button
 		contact.setId("contact-wiki");
 		contact.setTooltip(new Tooltip("Opens contact wiki"));
@@ -244,18 +245,33 @@ public class Builder extends Application implements TalkBoxConfiguration {
 					try {
 						Desktop.getDesktop().browse(new URI("https://github.com/amaanvania/TalkBox/wiki"));
 					} catch (IOException | URISyntaxException e1) {
-						// TODO Auto-generated catch block
 						e1.printStackTrace();
 					}
 		});
+		helpsOne.setContent(help);
+		helpsTwo.setContent(contact);
+		helpsOne.setHideOnClick(false);
+		helps.getItems().addAll(helpsOne, helpsTwo);
 		
-		ToolBar toolBar = new ToolBar(recordAudio,help, contact // add help button to toolbar
-		);
-
-		toolBar.setPrefSize(200, 20);
-		toolBar.setId("top-toolbar-config");
-		return toolBar;
+		Menu volumes = new Menu("Volume");
+		CustomMenuItem volumesOne = new CustomMenuItem();
+		final Slider vSlider = new Slider(0, 100, 100); // volume slider
+		volume = 100; //initial value for volume
+		vSlider.valueProperty().addListener(new ChangeListener<Number>() {
+			@Override
+			public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
+				volume = newValue.doubleValue() / 100.00;
+			}
+		});
+		volumesOne.setContent(vSlider);
+		volumes.getItems().addAll(volumesOne);
+		
+		MenuBar menuBar = new MenuBar();
+		menuBar.setId("Top-menu");
+		menuBar.getMenus().addAll(volumes, helps);
+		return menuBar;
 	}
+
 	public void recordHandle(){
 		AudioRecord a = new AudioRecord();
 		Stage x = new Stage();
@@ -277,7 +293,11 @@ public class Builder extends Application implements TalkBoxConfiguration {
 																			// Toolbar
 		Button play = playBtn();
 		Button save = saveBtn();
-		ToolBar toolBar = new ToolBar(play, save // add save button to toolbar
+		Button recordAudio = new Button("Record Audio");
+		recordAudio.setId("recordAudio-config");
+		recordAudio.setTooltip(new Tooltip("Click to Record Audio"));
+		recordAudio.setOnAction(e -> recordHandle());
+		ToolBar toolBar = new ToolBar(play, save, recordAudio // add save button to toolbar
 		);
 		toolBar.setPrefSize(200, 20);
 		toolBar.setId("bot-toolbar-config");
@@ -289,7 +309,7 @@ public class Builder extends Application implements TalkBoxConfiguration {
 	 * @return
 	 */
 	private Button playBtn() {
-		Button play = new Button("Play"); // play button
+		Button play = new Button("Run"); // play button
 		play.setId("play-config");
 		play.setTooltip(new Tooltip("Click to Open this configuration in the TalkBox App"));
 		play.setOnMouseClicked(e -> {
@@ -312,7 +332,6 @@ public class Builder extends Application implements TalkBoxConfiguration {
 					alert.showAndWait();
 				}
 			} catch (IOException z) {
-				// TODO Auto-generated catch block
 				z.printStackTrace();
 			}
 		});
@@ -357,6 +376,7 @@ public class Builder extends Application implements TalkBoxConfiguration {
 		URI u = f.toURI();
 		Media sound = new Media(u.toString());
 		MediaPlayer mediaPlayer = new MediaPlayer(sound);
+		mediaPlayer.setVolume(volume);
 		mediaPlayer.play();
 	}
 	/*
@@ -393,14 +413,14 @@ public class Builder extends Application implements TalkBoxConfiguration {
 			GridPane.setConstraints(iv1, i % 6, 4 + 2 * increment);
 			gridpane.getChildren().addAll(iv1, edit);
 		}
-		ToolBar topToolBar = buildTopToolbar(); 
 		ToolBar botToolBar = buildBotToolbar();
+		MenuBar topMenu = buildTopMenu();
 		StackPane a = new StackPane();
-		a.getChildren().addAll(gridpane, botToolBar, topToolBar);
-		StackPane.setAlignment(topToolBar, Pos.TOP_LEFT);
+		a.getChildren().addAll(gridpane, botToolBar, topMenu);
+		StackPane.setAlignment(topMenu, Pos.TOP_CENTER);
 		StackPane.setAlignment(botToolBar, Pos.BOTTOM_CENTER);
 		StackPane.setAlignment(gridpane, Pos.BOTTOM_CENTER);
-		Scene scene = new Scene(a);
+		Scene scene = new Scene(a, 651, 510);
 		String css = this.getClass().getResource("/resources/buttonstyle.css").toExternalForm();
 		scene.getStylesheets().add(css);
 		primaryStage.setScene(scene);
@@ -463,8 +483,10 @@ public class Builder extends Application implements TalkBoxConfiguration {
 			in.close();
 			fileIn.close();
 		} catch (IOException i) {
+			i.printStackTrace();
 			return;
 		} catch (ClassNotFoundException c) {
+			c.printStackTrace();
 			return;
 		}
 		this.file = f;
@@ -526,19 +548,16 @@ public class Builder extends Application implements TalkBoxConfiguration {
 
 	@Override
 	public int getNumberOfAudioButtons() {
-		// TODO Auto-generated method stub
 		return numSetButtons;
 	}
 
 	@Override
 	public int getNumberOfAudioSets() {
-		// TODO Auto-generated method stub
 		return numSetButtons;
 	}
 
 	@Override
 	public int getTotalNumberOfButtons() {
-		// TODO Auto-generated method stub
 		return numTotalButtons;
 	}
 
@@ -551,7 +570,6 @@ public class Builder extends Application implements TalkBoxConfiguration {
 
 	@Override
 	public String[][] getAudioFileNames() {
-		// TODO Auto-generated method stub
 		String[][] result = new String[getNumberOfAudioButtons()][getNumberOfAudioSets()];
 		for (int i = 0; i < buttons.length; i++) {
 			result[i][0] = buttons[i].getAudioPath();

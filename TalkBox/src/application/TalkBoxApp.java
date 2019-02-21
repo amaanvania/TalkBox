@@ -1,31 +1,30 @@
 package application;
 
-import java.awt.Color;
+import java.awt.Desktop;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URI;
+import java.net.URISyntaxException;
 
 import config.AudioButton;
 import config.Builder;
-import javafx.*;
 import javafx.application.Application;
 import javafx.event.EventHandler;
+import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Orientation;
-import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.TextField;
+import javafx.scene.control.MenuBar;
 import javafx.scene.control.ToolBar;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.FlowPane;
-import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
@@ -38,21 +37,16 @@ public class TalkBoxApp extends Application {
 	Image[] images;
 	String[] names;
 	Media[] audioFiles;
-	private GridPane gridpane;
-
 	private BorderPane appPane;
 	private VBox audioCard;
 	private FlowPane cardFlow;
 	private Button play;
-	private Image img;
 	private ImageView imgv;
 	private FlowPane mainFlow;
-	private ToolBar topBar;
-
 	public static void main(String[] args) {
 		launch(args);
 	}
-	
+
 	public TalkBoxApp() {
 
 	}
@@ -61,12 +55,13 @@ public class TalkBoxApp extends Application {
 		names = new String[50];
 		images = new Image[50];
 		audioFiles = new Media[50];
-		
+
 		appPane = new BorderPane();
 		mainFlow = new FlowPane();
-		topBar = buildTopToolbar();
+		buildTopToolbar();
+		MenuBar topMenu = builder.buildTopMenu();
 		appPane.setCenter(mainFlow);
-		appPane.setTop(topBar);
+		appPane.setTop(topMenu);
 		audioCard = new VBox();
 		audioCard.setPrefWidth(150);
 		audioCard.setPrefHeight(200);
@@ -93,6 +88,7 @@ public class TalkBoxApp extends Application {
 					URI u = f.toURI();
 					Media sound = new Media(u.toString());
 					MediaPlayer mediaPlayer = new MediaPlayer(sound);
+					mediaPlayer.setVolume(builder.volume);
 					mediaPlayer.play();
 				}
 			});
@@ -108,9 +104,9 @@ public class TalkBoxApp extends Application {
 //			GridPane.setConstraints(iv1, i % 6, 1 + 2 * increment);
 //			getPane().getChildren().addAll(imgv, textField);
 			cardFlow.getChildren().addAll(imgv, play);
-			audioCard.getChildren().add(cardFlow);
-			mainFlow.getChildren().add(audioCard);
 		}
+		audioCard.getChildren().add(cardFlow);
+		mainFlow.getChildren().add(audioCard);
 	}
 
 	public int getNumButtons() {
@@ -168,42 +164,77 @@ public class TalkBoxApp extends Application {
 		this.appPane = mainPane;
 	}
 
-	@Override
-	public void start(Stage primaryStage) {
-		//pane = FXMLLoader.load(getClass().getResource("/application/TalkBoxApp.fxml"));
-		initializeApp(primaryStage);
-	}
-
-	/**
-	 * @param primaryStage
-	 */
-	private void initializeApp(Stage primaryStage) {
-		appPane = new BorderPane();
-		mainFlow = new FlowPane();
-		topBar = buildTopToolbar();
-		appPane.setCenter(mainFlow);
-		appPane.setTop(topBar);
-		buildWelcomeScreen();
-		
-		Scene scene = new Scene(appPane, 900, 650);
-		scene.getStylesheets().add(getClass().getResource("/application/TalkBoxApp.css").toExternalForm());
-		primaryStage.setTitle("TalkBox App");
-		primaryStage.setScene(scene);
-		primaryStage.show();
-	}
-
-	/**
-	 * @return
-	 */
 	private ToolBar buildTopToolbar() {
 		return new ToolBar(new Button("Placeholder"));
 	}
 
-	/**
-	 * STILL NEED TO BUILD THE WELCOME SCREEN!
-	 */
-	private void buildWelcomeScreen() {
-		
+	@Override
+	public void start(Stage primaryStage) {
+		// pane =
+		// FXMLLoader.load(getClass().getResource("/application/TalkBoxApp.fxml"));
+		try {
+			Parent root = FXMLLoader.load(getClass().getResource("/application/WelcomeScreen.fxml"));
+			Scene scene = new Scene(root, 900, 650);
+			scene.getStylesheets().add(getClass().getResource("/application/WelcomeScreen.css").toExternalForm());
+			primaryStage.setTitle("TalkBox App");
+			primaryStage.setScene(scene);
+			primaryStage.show();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	@FXML
+	public void createNewTalkFileButton() {
+		try {
+			Builder config = new Builder();
+			Stage stage = new Stage();
+			FlowPane fp = config.buildFlowPane(stage);
+			Scene scene = new Scene(fp, 310, 440);
+			stage.setScene(scene);
+			stage.show();
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
+	}
+
+	@FXML
+	public void openExistingTalkFileButton() {
+			try {
+				Builder config = new Builder();
+				Stage stage = new Stage();
+				config.openSerializedFile(stage);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+	}
+	
+	@FXML
+	public void helpButton() {
+		try {
+//			Desktop.getDesktop().browse(new URI(
+//					"https://github.com/amaanvania/TalkBox/blob/master/Documentation/Talk%20Box%20User%20Manual.pdf"));
+			Desktop.getDesktop().browse(new URI(
+					"https://github.com/amaanvania/TalkBox/blob/master/Documentation"));
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (URISyntaxException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	@FXML
+	public void githubLink() {
+		try {
+//			Desktop.getDesktop().browse(new URI(
+//					"https://github.com/amaanvania/TalkBox/blob/master/Documentation/Talk%20Box%20User%20Manual.pdf"));
+			Desktop.getDesktop().browse(new URI(
+					"https://github.com/amaanvania/TalkBox"));
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (URISyntaxException e) {
+			e.printStackTrace();
+		}
 	}
 
 }

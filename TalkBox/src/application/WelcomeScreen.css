@@ -1,0 +1,15 @@
+#new-talk-btn:hover {
+	-fx-border-color:Black;
+}
+
+#open-talk-btn:hover {
+	-fx-border-color:Black;
+}
+
+#help-btn:hover {
+	-fx-border-color:Black;
+}
+
+#github-link:hover {
+	-fx-underline: True;
+}

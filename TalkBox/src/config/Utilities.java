@@ -18,8 +18,9 @@ public class Utilities { //class for some helpful utilities with static methods
 	public static String defaultPath;
 	public static int numSeconds;
 	public static String recordedAudioPath;
+	public static String resourcePath = System.getProperty("user.home") + File.separatorChar + "TalkBoxResources";
 
-	public static String fileChoose(Stage mainStage, Boolean pick) { //method to prompt filechooser
+	public static String fileChoose(Stage mainStage, boolean pick) { //method to prompt filechooser
 		FileChooser fileChooser = new FileChooser();
 		if(pick == true) {
 			FileChooser.ExtensionFilter extFilter = (new ExtensionFilter("Audio File","*.wav","*.mp3","*.wma")); 
@@ -29,10 +30,22 @@ public class Utilities { //class for some helpful utilities with static methods
 			FileChooser.ExtensionFilter extFilter = (new ExtensionFilter("Image files","*.jpg","*.png","*.tif")); 
 			fileChooser.getExtensionFilters().add(extFilter);
 		}
-		fileChooser.setInitialDirectory(new File("src/resources")); //initial dir is src/resources
+		new File(resourcePath).mkdirs();
+		fileChooser.setInitialDirectory(new File(resourcePath)); //initial dir is src/resources
 		File selectedFile = fileChooser.showOpenDialog(mainStage);
 		if (selectedFile != null) {
 			return selectedFile.getAbsolutePath();
+		}
+		return null;
+	}
+	
+	public static File chooseFile(Stage mainStage) { //method to prompt filechooser
+		FileChooser fileChooser = new FileChooser();
+		new File(resourcePath).mkdirs();
+		fileChooser.setInitialDirectory(new File(resourcePath)); //initial dir is src/resources
+		File selectedFile = fileChooser.showOpenDialog(mainStage);
+		if (selectedFile != null) {
+			return selectedFile;
 		}
 		return null;
 	}
@@ -41,8 +54,9 @@ public class Utilities { //class for some helpful utilities with static methods
 		FileChooser fileChooser = new FileChooser();
 		FileChooser.ExtensionFilter extFilter = (new ExtensionFilter("TalkBox File","*.talk")); //sets .talk extension
 		fileChooser.getExtensionFilters().add(extFilter);
+		new File(resourcePath).mkdirs();
 		if(defaultPath == null)
-			fileChooser.setInitialDirectory(new File("src/configFiles/")); //initial dir is src/configFiles
+			fileChooser.setInitialDirectory(new File(resourcePath)); //initial dir is src/configFiles
 		else fileChooser.setInitialDirectory(new File(defaultPath));
 		File selectedFile = fileChooser.showOpenDialog(mainStage);
 		if (selectedFile != null) {
@@ -56,6 +70,8 @@ public class Utilities { //class for some helpful utilities with static methods
 		FileChooser fileChooser = new FileChooser();
 		FileChooser.ExtensionFilter extFilter = (new ExtensionFilter("TalkBox File","*.talk"));
 		fileChooser.getExtensionFilters().add(extFilter);
+		new File(resourcePath).mkdirs();
+		fileChooser.setInitialDirectory(new File(resourcePath));
 		File selectedFile = fileChooser.showSaveDialog(mainStage);
 		if (selectedFile != null) {
 			return selectedFile;
@@ -65,7 +81,8 @@ public class Utilities { //class for some helpful utilities with static methods
 	
 	public static File recordFileSave(Stage mainStage) { //method to prompt filechooser
 		FileChooser fileChooser = new FileChooser();
-		fileChooser.setInitialDirectory(new File("src/resources/"));
+		new File(resourcePath).mkdirs();
+		fileChooser.setInitialDirectory(new File(resourcePath));
 		FileChooser.ExtensionFilter extFilter = (new ExtensionFilter("Audio File","*.wav"));
 		fileChooser.getExtensionFilters().add(extFilter);
 		File selectedFile = fileChooser.showSaveDialog(mainStage);
