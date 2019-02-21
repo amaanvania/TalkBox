@@ -31,7 +31,7 @@
             </Label>
             <FlowPane alignment="TOP_CENTER" columnHalignment="CENTER" layoutY="385.0" orientation="VERTICAL" prefHeight="213.0" prefWidth="900.0" prefWrapLength="0.0" vgap="15.0">
                <children>
-                  <Button id="new-talk-btn" mnemonicParsing="false" prefHeight="39.0" prefWidth="230.0" style="-fx-background-color: #00A4CA;" text="Create a new TalkFile" textAlignment="CENTER" textFill="WHITE">
+                  <Button id="new-talk-btn" mnemonicParsing="false" onAction="#createNewTalkFileButton" prefHeight="39.0" prefWidth="230.0" style="-fx-background-color: #00A4CA;" text="Create a new TalkFile" textAlignment="CENTER" textFill="WHITE">
                      <font>
                         <Font size="18.0" />
                      </font>
@@ -39,7 +39,7 @@
                         <DropShadow blurType="GAUSSIAN" color="#0000007f" height="8.75" offsetY="2.0" radius="4.1875" width="10.0" />
                      </effect>
                   </Button>
-                  <Button id="open-talk-btn" layoutX="345.0" layoutY="10.0" mnemonicParsing="false" prefHeight="39.0" prefWidth="230.0" style="-fx-background-color: #00A4CA;" text="Open an existing TalkFile" textAlignment="CENTER" textFill="WHITE">
+                  <Button id="open-talk-btn" layoutX="345.0" layoutY="10.0" mnemonicParsing="false" onAction="#openExistingTalkFileButton" prefHeight="39.0" prefWidth="230.0" style="-fx-background-color: #00A4CA;" text="Open an existing TalkFile" textAlignment="CENTER" textFill="WHITE">
                      <font>
                         <Font size="18.0" />
                      </font>
@@ -47,7 +47,7 @@
                         <DropShadow blurType="GAUSSIAN" color="#00000080" height="5.0" offsetY="2.0" radius="3.25" width="10.0" />
                      </effect>
                   </Button>
-                  <Button id="help-btn" layoutX="345.0" layoutY="49.0" mnemonicParsing="false" prefHeight="39.0" prefWidth="230.0" style="-fx-background-color: #00A4CA;" text="Help" textAlignment="CENTER" textFill="WHITE">
+                  <Button id="help-btn" layoutX="345.0" layoutY="49.0" mnemonicParsing="false" onAction="#helpButton" prefHeight="39.0" prefWidth="230.0" style="-fx-background-color: #00A4CA;" text="Help" textAlignment="CENTER" textFill="WHITE">
                      <font>
                         <Font size="18.0" />
                      </font>
@@ -67,7 +67,7 @@
                   <Font name="Javanese Text" size="14.0" />
                </font>
             </Label>
-            <Label id="github-link" layoutX="334.0" layoutY="614.0" prefHeight="40.0" prefWidth="260.0" text=" https://github.com/amaanvania/TalkBox">
+            <Label id="github-link" layoutX="334.0" layoutY="614.0" onMouseClicked="#githubLink" prefHeight="40.0" prefWidth="260.0" text=" https://github.com/amaanvania/TalkBox">
                <font>
                   <Font name="Javanese Text" size="14.0" />
                </font>
