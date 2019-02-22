@@ -29,6 +29,7 @@ import javafx.scene.control.CustomMenuItem;
 import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToolBar;
 import javafx.scene.control.Tooltip;
@@ -222,38 +223,31 @@ public class Builder extends Application implements TalkBoxConfiguration {
 	}
 	
 	public MenuBar buildTopMenu() {
-		Menu helps = new Menu("Help");
-        CustomMenuItem helpsOne = new CustomMenuItem();
-        CustomMenuItem helpsTwo = new CustomMenuItem();
-		Button help = new Button("User manual"); // help button
+		Menu helps = new Menu("Help"); //help dropdown
+		MenuItem help = new MenuItem("User manual");
 		help.setId("help-config");
-		help.setTooltip(new Tooltip("Opens the User Manual"));
 		help.setOnAction(e -> {
+		try {
+		Desktop.getDesktop().browse(new URI(
+				"https://github.com/amaanvania/TalkBox/blob/master/Documentation/Talk%20Box%20User%20Manual.pdf"));
+		} catch (IOException e1) {
+		e1.printStackTrace();
+		} catch (URISyntaxException e1) {
+		e1.printStackTrace();
+		}
+		});
+		MenuItem contact = new MenuItem("Contact us");
+		contact.setId("contact-wiki");
+		contact.setOnAction( e-> {
 			try {
-				Desktop.getDesktop().browse(new URI(
-						"https://github.com/amaanvania/TalkBox/blob/master/Documentation/Talk%20Box%20User%20Manual.pdf"));
-			} catch (IOException e1) {
-				e1.printStackTrace();
-			} catch (URISyntaxException e1) {
+				Desktop.getDesktop().browse(new URI("https://github.com/amaanvania/TalkBox/wiki"));
+			} catch (IOException | URISyntaxException e1) {
 				e1.printStackTrace();
 			}
 		});
-		Button contact = new Button("Contact"); // contact button
-		contact.setId("contact-wiki");
-		contact.setTooltip(new Tooltip("Opens contact wiki"));
-		contact.setOnAction( e-> {
-					try {
-						Desktop.getDesktop().browse(new URI("https://github.com/amaanvania/TalkBox/wiki"));
-					} catch (IOException | URISyntaxException e1) {
-						e1.printStackTrace();
-					}
-		});
-		helpsOne.setContent(help);
-		helpsTwo.setContent(contact);
-		helpsOne.setHideOnClick(false);
-		helps.getItems().addAll(helpsOne, helpsTwo);
+		helps.getItems().addAll(help, contact);
 		
-		Menu volumes = new Menu("Volume");
+		Menu volumes = new Menu("Volume"); //volume drop down
 		CustomMenuItem volumesOne = new CustomMenuItem();
 		final Slider vSlider = new Slider(0, 100, 100); // volume slider
 		volume = 100; //initial value for volume

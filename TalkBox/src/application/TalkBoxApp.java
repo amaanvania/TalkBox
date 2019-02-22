@@ -58,7 +58,6 @@ public class TalkBoxApp extends Application {
 
 		appPane = new BorderPane();
 		mainFlow = new FlowPane();
-		buildTopToolbar();
 		MenuBar topMenu = builder.buildTopMenu();
 		appPane.setCenter(mainFlow);
 		appPane.setTop(topMenu);
