@@ -342,7 +342,7 @@ public class Builder extends Application implements TalkBoxConfiguration {
 	 * @return
 	 */
 	private Button playBtn() {
-		Button play = new Button("Run"); // play button
+		Button play = new Button("Test"); // play button
 		play.setId("play-config");
 		play.setTooltip(new Tooltip("Click to Open this configuration in the TalkBox App"));
 		play.setOnMouseClicked(e -> {
