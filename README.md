@@ -17,13 +17,23 @@ Both the programs are interconnected.
 
 The various functionalities of these applications will be explained in depth, however at brief they include:
 
-Creating new configuration files
-Editing existing configuration files
-Recording Audio
-Saving configuration files
-Opening existing configuration files
-Volume adjusting
-Ability to choose images
-Ability to choose audio files
-Ability to playback audio files
-Intuitive and easy to use interfaces
+- Creating new configuration files
+
+- Editing existing configuration files
+
+- Recording Audio
+
+- Saving configuration files
+
+- Opening existing configuration files
+
+- Volume adjusting
+
+- Ability to choose images
+
+- Ability to choose audio files
+
+- Ability to playback audio files
+
+- Intuitive and easy to use interfaces
+
