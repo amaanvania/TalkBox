@@ -20,7 +20,6 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.MenuBar;
-import javafx.scene.control.ToolBar;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
@@ -164,16 +163,12 @@ public class TalkBoxApp extends Application {
 		this.appPane = mainPane;
 	}
 
-	private ToolBar buildTopToolbar() {
-		return new ToolBar(new Button("Placeholder"));
-	}
-
 	@Override
 	public void start(Stage primaryStage) {
 		try {
-			Parent root = FXMLLoader.load(getClass().getResource("/application/WelcomeScreen.fxml"));
+			Parent root = FXMLLoader.load(getClass().getResource("/resources/WelcomeScreen.fxml"));
 			Scene scene = new Scene(root, 900, 650);
-			scene.getStylesheets().add(getClass().getResource("/application/WelcomeScreen.css").toExternalForm());
+			scene.getStylesheets().add(getClass().getResource("/resources/WelcomeScreen.css").toExternalForm());
 			primaryStage.setTitle("TalkBox App");
 			primaryStage.setScene(scene);
 			primaryStage.show();

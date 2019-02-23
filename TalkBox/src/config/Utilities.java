@@ -18,7 +18,7 @@ public class Utilities { //class for some helpful utilities with static methods
 	public static String defaultPath;
 	public static int numSeconds;
 	public static String recordedAudioPath;
-	public static String resourcePath = System.getProperty("user.home") + File.separatorChar + "TalkBoxResources";
+	public static String resourcePath = System.getProperty("user.home") + File.separatorChar + "TalkBoxData";
 
 	public static String fileChoose(Stage mainStage, boolean pick) { //method to prompt filechooser
 		FileChooser fileChooser = new FileChooser();
@@ -52,7 +52,7 @@ public class Utilities { //class for some helpful utilities with static methods
 	
 	public static File configFileChoose(Stage mainStage) { //method to prompt filechooser
 		FileChooser fileChooser = new FileChooser();
-		FileChooser.ExtensionFilter extFilter = (new ExtensionFilter("TalkBox File","*.talk")); //sets .talk extension
+		FileChooser.ExtensionFilter extFilter = (new ExtensionFilter("TalkBox File","*.tbc")); //sets .talk extension
 		fileChooser.getExtensionFilters().add(extFilter);
 		new File(resourcePath).mkdirs();
 		if(defaultPath == null)
@@ -68,7 +68,7 @@ public class Utilities { //class for some helpful utilities with static methods
 	
 	public static File configFileSave(Stage mainStage) { //method to prompt filechooser
 		FileChooser fileChooser = new FileChooser();
-		FileChooser.ExtensionFilter extFilter = (new ExtensionFilter("TalkBox File","*.talk"));
+		FileChooser.ExtensionFilter extFilter = (new ExtensionFilter("TalkBox File","*.tbc"));
 		fileChooser.getExtensionFilters().add(extFilter);
 		new File(resourcePath).mkdirs();
 		fileChooser.setInitialDirectory(new File(resourcePath));

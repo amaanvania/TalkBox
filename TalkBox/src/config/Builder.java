@@ -404,6 +404,18 @@ public class Builder extends Application implements TalkBoxConfiguration {
 		x.setScene(new Scene(g));
 		x.show();
 	}
+	public boolean notValidInput(TextField textField){
+		return textField.getText().length() < 1 || Utilities.AudioPath == null || 
+				Utilities.AudioPath.length() < 1 || Utilities.ImagePath == null ||
+				Utilities.ImagePath.length() < 1;
+	}
+	public void emptyFieldHandle(){
+		Alert alert = new Alert(AlertType.WARNING);
+		alert.setTitle("Warning!");
+		alert.setHeaderText("Warning! Invalid input");
+		alert.setContentText("Make sure input is valid.");
+		alert.showAndWait();
+	}
 	public void imageHandle(String audioPath){
 		File f = new File(audioPath);
 		URI u = f.toURI();
@@ -440,7 +452,10 @@ public class Builder extends Application implements TalkBoxConfiguration {
 			Button submit = new Button("Submit");
 			Stage x = new Stage();
 			edit.setOnAction(e -> editHandle(x,submit,textField));
-			submit.setOnAction(event -> submitHandle(k, currentButton, iv1, textField, edit, x));
+			submit.setOnAction(event -> {
+				if(notValidInput(textField)) emptyFieldHandle();
+				else submitHandle(k, currentButton, iv1, textField, edit, x);
+			});
 			iv1.setOnMouseClicked(e -> imageHandle(buttons[k].getAudioPath()));
 			GridPane.setConstraints(edit, i % 6, 5 + 2 * increment);
 			GridPane.setConstraints(iv1, i % 6, 4 + 2 * increment);
@@ -522,8 +537,16 @@ public class Builder extends Application implements TalkBoxConfiguration {
 			c.printStackTrace();
 			return;
 		}
+		AudioButton[] newButtons = new AudioButton[e.numTotalButtons];
+		int k = 0;
+		for(AudioButton a : e.buttons){
+			if(a != null && ((a.name.length() > 0) || (a.AudioPath.length() > 0) || a.ImagePath.length() > 0)){
+				newButtons[k] = a;
+				k++;
+			}
+		}
 		this.file = f;
-		this.buttons = e.buttons;
+		this.buttons = newButtons;
 		this.numSetButtons = e.numSetButtons;
 		this.filename = e.filename;
 		this.numTotalButtons = e.numTotalButtons;
@@ -558,7 +581,15 @@ public class Builder extends Application implements TalkBoxConfiguration {
 	 */
 	public void saveSerializedFile() {
 		Builder b = new Builder();
-		b.buttons = this.buttons;
+		AudioButton[] newButtons = new AudioButton[this.numTotalButtons];
+		int k = 0;
+		for(AudioButton a : buttons){
+			if(a != null && ((a.name.length() > 0) || (a.AudioPath.length() > 0) || a.ImagePath.length() > 0)){
+				newButtons[k] = a;
+				k++;
+			}
+		}
+		b.buttons = newButtons;
 		b.filename = this.filename;
 		b.numSetButtons = this.numSetButtons;
 		b.numTotalButtons = this.numTotalButtons;
