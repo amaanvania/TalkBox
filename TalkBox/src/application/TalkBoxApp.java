@@ -10,6 +10,7 @@ import java.net.URISyntaxException;
 
 import config.AudioButton;
 import config.Builder;
+import config.Utilities;
 import javafx.application.Application;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -170,8 +171,6 @@ public class TalkBoxApp extends Application {
 
 	@Override
 	public void start(Stage primaryStage) {
-		// pane =
-		// FXMLLoader.load(getClass().getResource("/application/TalkBoxApp.fxml"));
 		try {
 			Parent root = FXMLLoader.load(getClass().getResource("/application/WelcomeScreen.fxml"));
 			Scene scene = new Scene(root, 900, 650);
@@ -201,9 +200,16 @@ public class TalkBoxApp extends Application {
 	@FXML
 	public void openExistingTalkFileButton() {
 			try {
-				Builder config = new Builder();
-				Stage stage = new Stage();
-				config.openSerializedFile(stage);
+				Builder b = Builder.openSerializedFile(Utilities.configFileChoose(new Stage()));
+				TalkBoxApp a = new TalkBoxApp(b);
+				BorderPane c = a.getPane();
+				Stage primaryStage = new Stage();
+				primaryStage.setTitle("TalkBox Application");
+				Scene scene = new Scene (c, 900, 650);
+				String css = this.getClass().getResource("/resources/buttonstyle.css").toExternalForm();
+				scene.getStylesheets().add(css);
+				primaryStage.setScene(scene);
+				primaryStage.show();
 			} catch (IOException e) {
 				e.printStackTrace();
 			}

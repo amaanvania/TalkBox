@@ -43,6 +43,7 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 public class Builder extends Application implements TalkBoxConfiguration {
@@ -152,7 +153,13 @@ public class Builder extends Application implements TalkBoxConfiguration {
 		submit.setTooltip(new Tooltip("Click Submit to Start Configuration"));
 		submit.setOnAction(e -> {
 			try {
-				buildInitialGui(primaryStage);
+				if(numTotalButtons < 1){
+					Alert alert = new Alert(AlertType.WARNING);
+					alert.setTitle("Warning Dialog");
+					alert.setHeaderText("Warning! Zero Buttons");
+					alert.setContentText("Set more than 0 buttons");
+					alert.showAndWait();
+				}else buildInitialGui(primaryStage);
 			} catch (IOException e1) {
 				e1.printStackTrace();
 			}
@@ -272,16 +279,37 @@ public class Builder extends Application implements TalkBoxConfiguration {
 		return menuBar;
 	}
 
-	public void recordHandle(){
+	public void recordHandle() throws FileNotFoundException{
 		AudioRecord a = new AudioRecord();
 		Stage x = new Stage();
-		Button record = a.buildButton(x);
-		record.setId("record-config");
-		Scene scene = new Scene(record,150,150);
+		HBox record = a.buildButtons();
+		VBox v = buildRecordFrame();
+		v.getChildren().add(record);
+		record.setAlignment(Pos.BOTTOM_LEFT);
+		Scene scene = new Scene(v);
 		String css = this.getClass().getResource("/resources/buttonstyle.css").toExternalForm();
 		scene.getStylesheets().add(css);
 		x.setScene(scene);
 		x.show();
+	}
+	
+	public VBox buildRecordFrame(){
+		VBox v = new VBox();
+		Text line1 = new Text("\n Instructions on Recording Audio \n");
+		Text line2 = new Text("\n 1. Click Record Button \n");
+		Text line3 = new Text("\n 2. Set path of audio file \n");
+		Text line4 = new Text("\n 3. Now microphone is recording, input sound \n");
+		Text line5 = new Text("\n 4. Click stop Button to stop recording \n");
+		Text line6 = new Text("\n 5. Click play Button to play recording \n");
+		v.getChildren().addAll(line1,line2,line3,line4,line5,line6);
+		return v;
+	}
+	public void alertHandle(){
+		Alert alert = new Alert(AlertType.WARNING);
+		alert.setTitle("Warning!");
+		alert.setHeaderText("Warning! Not Yet Implemented");
+		alert.setContentText("Functionality will come in future");
+		alert.showAndWait();
 	}
 	public ToolBar buildBotToolbar() throws IOException { // method
 																			// which
@@ -293,11 +321,21 @@ public class Builder extends Application implements TalkBoxConfiguration {
 																			// Toolbar
 		Button play = playBtn();
 		Button save = saveBtn();
+		Button addNewButton = new Button("Add Button");
+		addNewButton.setOnAction(e -> alertHandle());
+		Button deleteButton = new Button("Delete Button");
+		deleteButton.setOnAction(e -> alertHandle());
 		Button recordAudio = new Button("Record Audio");
 		recordAudio.setId("recordAudio-config");
 		recordAudio.setTooltip(new Tooltip("Click to Record Audio"));
-		recordAudio.setOnAction(e -> recordHandle());
-		ToolBar toolBar = new ToolBar(play, save, recordAudio // add save button to toolbar
+		recordAudio.setOnAction(e -> {
+			try {
+				recordHandle();
+			} catch (FileNotFoundException e1) {
+				e1.printStackTrace();
+			}
+		});
+		ToolBar toolBar = new ToolBar(play, save, recordAudio,addNewButton,deleteButton // add save button to toolbar
 		);
 		toolBar.setPrefSize(200, 20);
 		toolBar.setId("bot-toolbar-config");
@@ -314,7 +352,7 @@ public class Builder extends Application implements TalkBoxConfiguration {
 		play.setTooltip(new Tooltip("Click to Open this configuration in the TalkBox App"));
 		play.setOnMouseClicked(e -> {
 			try {
-				if (getSetButtons() > 0) {
+				if (getSetButtons() > 0 && this.file != null) {
 					TalkBoxApp a = new TalkBoxApp(openSerializedFile(file));
 					BorderPane b = a.getPane();
 					Stage primaryStage = new Stage();
@@ -428,7 +466,7 @@ public class Builder extends Application implements TalkBoxConfiguration {
 	}
 
 	private Button buildButton(int i, TextField textField) {
-		Button edit = (buttons[i] == null) ? new Button("Edit Button:") : new Button(textField.getText());
+		Button edit = (buttons[i] == null) ? new Button("Edit:") : new Button(textField.getText());
 		edit.setPrefSize(100, 20);
 		edit.setId("edit-config");
 		edit.setTooltip(new Tooltip("Click to Edit Button"));
@@ -502,7 +540,7 @@ public class Builder extends Application implements TalkBoxConfiguration {
 	 * Method to open "Saved" serialized File Within the configuration App
 	 * Returns the "Saved" builder object
 	 */
-	public Builder openSerializedFile(File file) throws IOException {
+	public static Builder openSerializedFile(File file) throws IOException {
 		Builder e = null;
 		try {
 			FileInputStream fileIn = new FileInputStream(file.getAbsolutePath());
@@ -563,7 +601,6 @@ public class Builder extends Application implements TalkBoxConfiguration {
 
 	@Override
 	public Path getRelativePathToAudioFiles() {
-		// TODO Auto-generated method stub
 		Path path = FileSystems.getDefault().getPath("/resources");
 		return path;
 	}

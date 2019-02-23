@@ -97,7 +97,6 @@ public class Utilities { //class for some helpful utilities with static methods
 		gridpane.setVgap(10);
 		gridpane.setHgap(10);
 		primaryStage.setTitle("Configure Button");
-		//Button submit = new Button("Submit");
 		Button audio = new Button("Choose AudioFile");
 		Button image = new Button("Choose Image");
 		Label label1 = new Label("Set Title:"); //prompt for name of button
