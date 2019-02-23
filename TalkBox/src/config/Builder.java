@@ -324,6 +324,7 @@ public class Builder extends Application implements TalkBoxConfiguration {
 		recordAudio.setTooltip(new Tooltip("Click to Record Audio"));
 		recordAudio.setOnAction(e -> {
 			try {
+				//
 				recordHandle();
 			} catch (FileNotFoundException e1) {
 				e1.printStackTrace();
