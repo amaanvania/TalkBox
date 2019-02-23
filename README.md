@@ -2,6 +2,9 @@
 
 The purpose of the TalkBox application is to introduce a virtual environment allowing the simulation of a TalkBox. This software is suited towards users with speech impairments. The components of the applications are easily configurable to the liking of the user. The design is simple, yet effective. 
 
+To get started:
+
+https://github.com/amaanvania/TalkBox/blob/master/Documentation/TalkBoxUserManual.pdf
 
 The various functionalities of these applications include:
 
