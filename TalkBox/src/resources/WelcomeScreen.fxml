@@ -57,12 +57,12 @@
                   </Button>
                </children>
             </FlowPane>
-            <Label layoutX="692.0" layoutY="614.0" prefHeight="40.0" prefWidth="208.0" text="Created by Nasif, Amaan &amp; Tony">
+            <Label alignment="CENTER_RIGHT" contentDisplay="RIGHT" layoutX="619.0" layoutY="614.0" prefHeight="40.0" prefWidth="272.0" text="Created by Nasif, Amaan &amp; Tony" textAlignment="RIGHT">
                <font>
                   <Font name="Javanese Text" size="14.0" />
                </font>
             </Label>
-            <Label layoutX="7.0" layoutY="614.0" prefHeight="40.0" prefWidth="174.0" text="EECS 2311 Software Project">
+            <Label layoutX="7.0" layoutY="614.0" prefHeight="40.0" prefWidth="288.0" text="EECS 2311 Software Project">
                <font>
                   <Font name="Javanese Text" size="14.0" />
                </font>
