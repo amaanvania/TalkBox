@@ -13,6 +13,8 @@ import javax.sound.sampled.TargetDataLine;
 import javafx.application.Application;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.FlowPane;
@@ -122,11 +124,20 @@ public class AudioRecord extends Application {
 	public void handleButton() throws LineUnavailableException {
 
 	}
+	public void alertHandle(){
+		Alert alert = new Alert(AlertType.WARNING);
+		alert.setTitle("Warning!");
+		alert.setHeaderText("Warning! No microphone");
+		alert.setContentText("Connect microphone to record");
+		alert.showAndWait();
+	}
 
 	public void recordAudio(String filePath) throws LineUnavailableException, InterruptedException {
 		AudioFormat format = new AudioFormat(8000.0f, 16, 1, true, true);
 		DataLine.Info info = new DataLine.Info(TargetDataLine.class, format);
 		if (!AudioSystem.isLineSupported(info)) {
+			alertHandle();
+			return;
 		}
 		final TargetDataLine targetDataLine = (TargetDataLine) AudioSystem.getLine(info);
 		targetDataLine.open();
@@ -137,7 +148,6 @@ public class AudioRecord extends Application {
 			try {
 				AudioSystem.write(audioStream, AudioFileFormat.Type.WAVE, wavFile);
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		};

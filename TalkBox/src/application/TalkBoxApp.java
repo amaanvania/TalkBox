@@ -20,6 +20,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.MenuBar;
+import javafx.scene.control.ToolBar;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
@@ -43,45 +44,67 @@ public class TalkBoxApp extends Application {
 	private Button play;
 	private ImageView imgv;
 	private FlowPane mainFlow;
+
 	public static void main(String[] args) {
 		launch(args);
 	}
 
 	public TalkBoxApp() {
+	}
 
+	public ToolBar buildBotToolbar(Builder b) throws IOException { // method
+		// which
+		// builds
+		// and
+		// returns
+		// the
+		// bot
+		// Toolbar
+		Button play = new Button("Edit");
+		play.setOnAction(e-> {
+			try {
+				b.buildInitialGui(new Stage());
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+		});
+		ToolBar toolBar = new ToolBar(play);																				
+		toolBar.setPrefSize(200, 20);
+		toolBar.setId("bot-toolbar-config");
+		return toolBar;
 	}
 
 	public TalkBoxApp(Builder builder) throws IOException {
 		names = new String[50];
 		images = new Image[50];
 		audioFiles = new Media[50];
-
 		appPane = new BorderPane();
 		mainFlow = new FlowPane();
 		MenuBar topMenu = builder.buildTopMenu();
 		appPane.setCenter(mainFlow);
 		appPane.setTop(topMenu);
 		audioCard = new VBox();
-		audioCard.setPrefWidth(150);
-		audioCard.setPrefHeight(200);
+		audioCard.setMaxWidth(160);
+		audioCard.setMaxHeight(210);
 		cardFlow = new FlowPane();
 		cardFlow.setOrientation(Orientation.VERTICAL);
 		cardFlow.setHgap(10);
-//		setPane(new GridPane());
-//		getPane().setPrefSize(500, 500);
-//		getPane().setVgap(10);
-//		getPane().setHgap(10);
+		// setPane(new GridPane());
+		// getPane().setPrefSize(500, 500);
+		// getPane().setVgap(10);
+		// getPane().setHgap(10);
 		for (int i = 0; i < builder.getSetButtons(); i++) {
-//			if (i > 0 && i % 6 == 0) {
-//				increment++;
-//			}
+			// if (i > 0 && i % 6 == 0) {
+			// increment++;
+			// }
 			AudioButton button = builder.buttons[i];
 			names[i] = button.getName();
-//			TextField textField = new TextField();
-//			textField.setText(button.getName());
+			// TextField textField = new TextField();
+			// textField.setText(button.getName());
 			play = new Button(button.getName());
-			play.setPrefWidth(149);
-			play.setPrefHeight(74);
+			play.setMaxWidth(149);
+			play.setMaxHeight(74);
 			play.setOnMouseClicked(new EventHandler<MouseEvent>() {
 				public void handle(MouseEvent me) {
 					File f = new File(button.getAudioPath());
@@ -100,13 +123,15 @@ public class TalkBoxApp extends Application {
 			imgv.setPreserveRatio(true);
 			imgv.setSmooth(true);
 			imgv.setCache(true);
-//			GridPane.setConstraints(textField, i % 6, 2 + 2 * increment);
-//			GridPane.setConstraints(iv1, i % 6, 1 + 2 * increment);
-//			getPane().getChildren().addAll(imgv, textField);
+			// GridPane.setConstraints(textField, i % 6, 2 + 2 * increment);
+			// GridPane.setConstraints(iv1, i % 6, 1 + 2 * increment);
+			// getPane().getChildren().addAll(imgv, textField);
 			cardFlow.getChildren().addAll(imgv, play);
 		}
 		audioCard.getChildren().add(cardFlow);
 		mainFlow.getChildren().add(audioCard);
+		ToolBar botToolBar = buildBotToolbar(builder);
+		appPane.setBottom(botToolBar);
 	}
 
 	public int getNumButtons() {
@@ -127,34 +152,34 @@ public class TalkBoxApp extends Application {
 		return audioFiles;
 	}
 
-//	public GridPane buildApp() {
-//		int increment = 0;
-//		GridPane gridpane = new GridPane();
-//		gridpane.setPrefSize(500, 500);
-//		gridpane.setVgap(10);
-//		gridpane.setHgap(10);
-//		for (int i = 0; i < getNumButtons(); i++) {
-//			if (i > 0 && i % 6 == 0) {
-//				increment++;
-//			}
-//			Image img = images[i];
-//			System.out.println(names[i]);
-//			TextField textField = new TextField();
-//			textField.setText(names[i]);
-//			ImageView iv1 = new ImageView();
-//			iv1.setImage(img);
-//			iv1.setFitWidth(100);
-//			iv1.setPreserveRatio(true);
-//			iv1.setSmooth(true);
-//			iv1.setCache(true);
-////			GridPane.setConstraints(textField, i % 6, 2 + 2 * increment);
-////			GridPane.setConstraints(iv1, i % 6, 1 + 2 * increment);
-//			gridpane.getChildren().addAll(iv1, textField);
-//		}
-//
-//		return gridpane;
-//
-//	}
+	// public GridPane buildApp() {
+	// int increment = 0;
+	// GridPane gridpane = new GridPane();
+	// gridpane.setPrefSize(500, 500);
+	// gridpane.setVgap(10);
+	// gridpane.setHgap(10);
+	// for (int i = 0; i < getNumButtons(); i++) {
+	// if (i > 0 && i % 6 == 0) {
+	// increment++;
+	// }
+	// Image img = images[i];
+	// System.out.println(names[i]);
+	// TextField textField = new TextField();
+	// textField.setText(names[i]);
+	// ImageView iv1 = new ImageView();
+	// iv1.setImage(img);
+	// iv1.setFitWidth(100);
+	// iv1.setPreserveRatio(true);
+	// iv1.setSmooth(true);
+	// iv1.setCache(true);
+	//// GridPane.setConstraints(textField, i % 6, 2 + 2 * increment);
+	//// GridPane.setConstraints(iv1, i % 6, 1 + 2 * increment);
+	// gridpane.getChildren().addAll(iv1, textField);
+	// }
+	//
+	// return gridpane;
+	//
+	// }
 
 	public BorderPane getPane() {
 		return appPane;
@@ -194,43 +219,41 @@ public class TalkBoxApp extends Application {
 
 	@FXML
 	public void openExistingTalkFileButton() {
-			try {
-				Builder b = Builder.openSerializedFile(Utilities.configFileChoose(new Stage()));
-				TalkBoxApp a = new TalkBoxApp(b);
-				BorderPane c = a.getPane();
-				Stage primaryStage = new Stage();
-				primaryStage.setTitle("TalkBox Application");
-				Scene scene = new Scene (c, 900, 650);
-				String css = this.getClass().getResource("/resources/buttonstyle.css").toExternalForm();
-				scene.getStylesheets().add(css);
-				primaryStage.setScene(scene);
-				primaryStage.show();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+		try {
+			Builder b = Builder.openSerializedFile(Utilities.configFileChoose(new Stage()));
+			TalkBoxApp a = new TalkBoxApp(b);
+			BorderPane c = a.getPane();
+			Stage primaryStage = new Stage();
+			primaryStage.setTitle("TalkBox Application");
+			Scene scene = new Scene(c, 900, 650);
+			String css = this.getClass().getResource("/resources/buttonstyle.css").toExternalForm();
+			scene.getStylesheets().add(css);
+			primaryStage.setScene(scene);
+			primaryStage.show();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
-	
+
 	@FXML
 	public void helpButton() {
 		try {
-//			Desktop.getDesktop().browse(new URI(
-//					"https://github.com/amaanvania/TalkBox/blob/master/Documentation/Talk%20Box%20User%20Manual.pdf"));
-			Desktop.getDesktop().browse(new URI(
-					"https://github.com/amaanvania/TalkBox/blob/master/Documentation"));
+			// Desktop.getDesktop().browse(new URI(
+			// "https://github.com/amaanvania/TalkBox/blob/master/Documentation/Talk%20Box%20User%20Manual.pdf"));
+			Desktop.getDesktop().browse(new URI("https://github.com/amaanvania/TalkBox/blob/master/Documentation"));
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (URISyntaxException e) {
 			e.printStackTrace();
 		}
 	}
-	
+
 	@FXML
 	public void githubLink() {
 		try {
-//			Desktop.getDesktop().browse(new URI(
-//					"https://github.com/amaanvania/TalkBox/blob/master/Documentation/Talk%20Box%20User%20Manual.pdf"));
-			Desktop.getDesktop().browse(new URI(
-					"https://github.com/amaanvania/TalkBox"));
+			// Desktop.getDesktop().browse(new URI(
+			// "https://github.com/amaanvania/TalkBox/blob/master/Documentation/Talk%20Box%20User%20Manual.pdf"));
+			Desktop.getDesktop().browse(new URI("https://github.com/amaanvania/TalkBox"));
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (URISyntaxException e) {

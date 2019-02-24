@@ -257,7 +257,15 @@ public class Builder extends Application implements TalkBoxConfiguration {
 				e1.printStackTrace();
 			}
 		});
-		helps.getItems().addAll(help, contact);
+		MenuItem bugReport = new MenuItem("Report issue");
+		bugReport.setOnAction(e -> {
+			try {
+				Desktop.getDesktop().browse(new URI("https://github.com/amaanvania/TalkBox/issues"));
+			} catch (IOException | URISyntaxException e1) {
+				e1.printStackTrace();
+			}
+		});
+		helps.getItems().addAll(help, contact,bugReport);
 		
 		Menu volumes = new Menu("Volume"); //volume drop down
 		CustomMenuItem volumesOne = new CustomMenuItem();
