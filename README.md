@@ -31,7 +31,7 @@ https://github.com/amaanvania/TalkBox/blob/master/Documentation/TalkBoxUserManua
 
 # Screenshots
 
-![config screen](https://imgur.com/Vp1Pi6t)
-![https://imgur.com/JyuoWOE](https://imgur.com/JyuoWOE)
-![https://imgur.com/2P4TNnN](https://imgur.com/2P4TNnN)
-![https://imgur.com/uBwbJUV](https://imgur.com/uBwbJUV)
+![config screen](https://i.imgur.com/Vp1Pi6t.png)
+![https://imgur.com/JyuoWOE](https://i.imgur.com/JyuoWOE.png)
+![https://imgur.com/2P4TNnN](https://i.imgur.com/2P4TNnN.png)
+![https://imgur.com/uBwbJUV](https://i.imgur.com/uBwbJUV.png)
