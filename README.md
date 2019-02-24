@@ -29,3 +29,9 @@ https://github.com/amaanvania/TalkBox/blob/master/Documentation/TalkBoxUserManua
 
 - Intuitive and easy to use interfaces
 
+# Screenshots
+
+![config screen](https://i.imgur.com/Vp1Pi6t.png)
+![https://imgur.com/JyuoWOE](https://i.imgur.com/JyuoWOE.png)
+![https://imgur.com/2P4TNnN](https://i.imgur.com/2P4TNnN.png)
+![https://imgur.com/uBwbJUV](https://i.imgur.com/uBwbJUV.png)
