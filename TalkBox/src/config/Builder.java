@@ -12,6 +12,9 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
+import java.util.List;
+
+import javax.imageio.ImageIO;
 
 import application.TalkBoxApp;
 import javafx.application.Application;
@@ -36,6 +39,8 @@ import javafx.scene.control.Tooltip;
 import javafx.scene.control.Slider;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.DragEvent;
+import javafx.scene.input.TransferMode;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.GridPane;
@@ -424,6 +429,24 @@ public class Builder extends Application implements TalkBoxConfiguration {
 		mediaPlayer.setVolume(volume);
 		mediaPlayer.play();
 	}
+	public void dragOverHandle(DragEvent e){
+		if(e.getDragboard().hasFiles()){
+			e.acceptTransferModes(TransferMode.ANY);
+		}
+	}
+	public void dropHandle(DragEvent e,AudioButton b) throws IOException{
+		List<File> files = e.getDragboard().getFiles();
+		if(isImage(files.get(0).getAbsolutePath())) b.setImagePath(files.get(0).getAbsolutePath());
+		if(isAudio(files.get(0).getAbsolutePath())) b.setAudioPath(files.get(0).getAbsolutePath());
+	}
+	public static boolean isImage(String filepath) throws IOException {
+	    File f = new File(filepath);
+	    return (ImageIO.read(f) != null);
+	}
+	public static boolean isAudio(String filepath){
+		File f = new File(filepath);
+		return f.getAbsolutePath().endsWith(".wav") || f.getAbsolutePath().endsWith(".mp3");
+	}
 	/*
 	 * Method which builds the configuration GUI Allowing user to view and edit
 	 * each button
@@ -444,6 +467,7 @@ public class Builder extends Application implements TalkBoxConfiguration {
 			if (i > 0 && i % 6 == 0) increment++; // incrementer to define number of rows
 			AudioButton currentButton = (buttons[i] == null) ? new AudioButton() : buttons[i];
 			ImageView iv1 = buildImageView();
+			iv1.setOnDragOver(e -> dragOverHandle(e));
 			if (buttons[i] == null)iv1.setImage(img);
 			else iv1.setImage(new Image(new FileInputStream(buttons[i].getImagePath())));
 			TextField textField;
@@ -455,6 +479,21 @@ public class Builder extends Application implements TalkBoxConfiguration {
 			submit.setOnAction(event -> {
 				if(notValidInput(textField)) emptyFieldHandle();
 				else submitHandle(k, currentButton, iv1, textField, edit, x);
+			});
+			iv1.setOnDragDropped(e -> {
+				try {
+					dropHandle(e,currentButton);
+					if(isImage(e.getDragboard().getFiles().get(0).getAbsolutePath())){
+						iv1.setImage(new Image(new FileInputStream(currentButton.getImagePath())));
+						Utilities.ImagePath = currentButton.getImagePath();
+					}
+					if(isAudio(e.getDragboard().getFiles().get(0).getAbsolutePath())){
+						Utilities.AudioPath = currentButton.getAudioPath();
+					}
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
 			});
 			iv1.setOnMouseClicked(e -> imageHandle(buttons[k].getAudioPath()));
 			GridPane.setConstraints(edit, i % 6, 5 + 2 * increment);

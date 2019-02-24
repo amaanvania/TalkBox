@@ -66,6 +66,7 @@ public class TalkBoxApp extends Application {
 		audioCard.setPrefHeight(200);
 		cardFlow = new FlowPane();
 		cardFlow.setOrientation(Orientation.VERTICAL);
+		cardFlow.setHgap(10);
 //		setPane(new GridPane());
 //		getPane().setPrefSize(500, 500);
 //		getPane().setVgap(10);
@@ -93,9 +94,9 @@ public class TalkBoxApp extends Application {
 			});
 			images[i] = new Image(new FileInputStream(button.ImagePath));
 			imgv = new ImageView();
-			imgv.setImage(new Image(new FileInputStream(button.ImagePath)));
 			imgv.setFitWidth(149);
 			imgv.setFitHeight(124);
+			imgv.setImage(images[i]);
 			imgv.setPreserveRatio(true);
 			imgv.setSmooth(true);
 			imgv.setCache(true);
