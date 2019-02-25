@@ -241,7 +241,7 @@ public class Builder extends Application implements TalkBoxConfiguration {
 		help.setOnAction(e -> {
 		try {
 		Desktop.getDesktop().browse(new URI(
-				"https://github.com/amaanvania/TalkBox/blob/master/Documentation/Talk%20Box%20User%20Manual.pdf"));
+				"https://github.com/amaanvania/TalkBox/blob/master/Documentation/TalkBoxUserManual.pdf"));
 		} catch (IOException e1) {
 		e1.printStackTrace();
 		} catch (URISyntaxException e1) {
