@@ -61,7 +61,7 @@ public class TalkBoxApp extends Application {
 		// bot
 		// Toolbar
 		Button play = new Button("Edit");
-		play.setOnAction(e-> {
+		play.setOnAction(e -> {
 			try {
 				b.buildInitialGui(new Stage());
 			} catch (IOException e1) {
@@ -69,7 +69,7 @@ public class TalkBoxApp extends Application {
 				e1.printStackTrace();
 			}
 		});
-		ToolBar toolBar = new ToolBar(play);																				
+		ToolBar toolBar = new ToolBar(play);
 		toolBar.setPrefSize(200, 20);
 		toolBar.setId("bot-toolbar-config");
 		return toolBar;
@@ -123,6 +123,14 @@ public class TalkBoxApp extends Application {
 			imgv.setPreserveRatio(true);
 			imgv.setSmooth(true);
 			imgv.setCache(true);
+			imgv.setOnMouseClicked(e -> {
+				File f = new File(button.getAudioPath());
+				URI u = f.toURI();
+				Media sound = new Media(u.toString());
+				MediaPlayer mediaPlayer = new MediaPlayer(sound);
+				mediaPlayer.setVolume(builder.volume);
+				mediaPlayer.play();
+			});
 			// GridPane.setConstraints(textField, i % 6, 2 + 2 * increment);
 			// GridPane.setConstraints(iv1, i % 6, 1 + 2 * increment);
 			// getPane().getChildren().addAll(imgv, textField);
