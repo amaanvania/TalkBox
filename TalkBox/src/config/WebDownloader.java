@@ -40,6 +40,7 @@ public class WebDownloader {
 
 	public static List<String> getImages(String topic) {
 		List<String> result = new ArrayList<String>();
+		topic.replaceAll(" ", "+");
 		try {
 			Document doc = Jsoup.connect("https://pixabay.com/images/search/" + topic + "/")
 					.userAgent(

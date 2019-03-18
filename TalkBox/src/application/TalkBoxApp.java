@@ -212,7 +212,14 @@ public class TalkBoxApp extends Application {
 			int j = k;
 			ImageView iv1 = builder.buildImageView();
 			iv1.setImage(new Image(new FileInputStream(builder.buttons.get(j).getImagePath())));
-			iv1.setOnMouseClicked(e -> builder.imageHandle(builder.buttons.get(j).getAudioPath()));
+			iv1.setOnMouseClicked(e -> {
+				try {
+					builder.imageHandle(builder.buttons.get(j).getAudioPath());
+				} catch (InterruptedException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+			});
 			GridPane.setConstraints(iv1, j % 6, 4 + 2);
 			gridpane.getChildren().addAll(iv1);
 		}
