@@ -7,7 +7,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-
 import config.AudioButton;
 import config.Builder;
 import config.Utilities;
@@ -16,20 +15,24 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Orientation;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.MenuBar;
+import javafx.scene.control.Pagination;
 import javafx.scene.control.ToolBar;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.FlowPane;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.stage.Stage;
+import javafx.util.Callback;
 
 public class TalkBoxApp extends Application {
 	// class which builds GUI for talkbox application
@@ -44,6 +47,9 @@ public class TalkBoxApp extends Application {
 	private Button play;
 	private ImageView imgv;
 	private FlowPane mainFlow;
+	public Builder builder;
+	public int numSetButtons;
+	public int numberPages;
 
 	public static void main(String[] args) {
 		launch(args);
@@ -52,7 +58,7 @@ public class TalkBoxApp extends Application {
 	public TalkBoxApp() {
 	}
 
-	public ToolBar buildBotToolbar(Builder b) throws IOException { // method
+	public ToolBar buildBotToolbar() throws IOException { // method
 		// which
 		// builds
 		// and
@@ -63,7 +69,7 @@ public class TalkBoxApp extends Application {
 		Button play = new Button("Edit");
 		play.setOnAction(e -> {
 			try {
-				b.buildInitialGui(new Stage());
+				builder.buildInitialGui(new Stage(),builder.pagination());
 			} catch (IOException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
@@ -76,6 +82,51 @@ public class TalkBoxApp extends Application {
 	}
 
 	public TalkBoxApp(Builder builder) throws IOException {
+		this.builder = builder;
+	}
+	
+    public VBox createPage(int pageIndex) throws FileNotFoundException {
+        VBox box = new VBox(20);
+        int page = pageIndex;
+        for (int i = page; i < page + 1; i++) {
+            box.getChildren().add(buildApp(i));
+        }
+        return box;
+    }
+	public Pagination pagination(){
+		Pagination pagination = new Pagination(1);
+		pagination.setPageCount(builder.numPages);
+		pagination.setMaxHeight(400.0);
+        pagination.setPageFactory(new Callback<Integer, Node>() {	 
+            @Override
+            public Node call(Integer pageIndex) {
+                    try {
+						return createPage(pageIndex);
+					} catch (FileNotFoundException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+                    return null;
+                }
+        });
+        return pagination;
+	}
+	
+	public void buildApplication(Stage primaryStage) throws IOException {
+		ToolBar botToolBar = buildBotToolbar();
+		MenuBar topToolBar = builder.buildTopMenu();
+		BorderPane appPane = new BorderPane();
+		appPane.setCenter(pagination());
+		appPane.setTop(topToolBar);
+		appPane.setBottom(botToolBar);
+		Scene scene = new Scene(appPane, 651, 510);
+		String css = this.getClass().getResource("/resources/buttonstyle.css").toExternalForm();
+		scene.getStylesheets().add(css);
+		primaryStage.setScene(scene);
+		primaryStage.show();
+	}
+	
+	public BorderPane buildTalkBoxApp(Builder builder) throws IOException{
 		names = new String[50];
 		images = new Image[50];
 		audioFiles = new Media[50];
@@ -98,7 +149,7 @@ public class TalkBoxApp extends Application {
 			// if (i > 0 && i % 6 == 0) {
 			// increment++;
 			// }
-			AudioButton button = builder.buttons[i];
+			AudioButton button = builder.buttons.get(i);
 			names[i] = button.getName();
 			// TextField textField = new TextField();
 			// textField.setText(button.getName());
@@ -138,10 +189,35 @@ public class TalkBoxApp extends Application {
 		}
 		audioCard.getChildren().add(cardFlow);
 		mainFlow.getChildren().add(audioCard);
-		ToolBar botToolBar = buildBotToolbar(builder);
+		ToolBar botToolBar = buildBotToolbar();
 		appPane.setBottom(botToolBar);
+		return appPane;
 	}
-
+	
+	public GridPane buildApp(int pageNumber) throws FileNotFoundException {
+		GridPane gridpane = new GridPane();
+		gridpane.setPrefSize(500, 500);
+		gridpane.setVgap(10);
+		gridpane.setHgap(10);
+		int numButtons;
+		if(pageNumber < builder.numPages){
+			numButtons = 6;
+		}
+		else{
+			numButtons = numSetButtons - ((numberPages - 1) * 6);
+		}
+		for (int i = pageNumber * 6; i < (pageNumber * 6) + numButtons; i++) {
+			int k = i;
+			k = (k >= builder.buttons.size() ? builder.buttons.size() - 1 : k);
+			int j = k;
+			ImageView iv1 = builder.buildImageView();
+			iv1.setImage(new Image(new FileInputStream(builder.buttons.get(j).getImagePath())));
+			iv1.setOnMouseClicked(e -> builder.imageHandle(builder.buttons.get(j).getAudioPath()));
+			GridPane.setConstraints(iv1, j % 6, 4 + 2);
+			gridpane.getChildren().addAll(iv1);
+		}
+		return gridpane;
+	}
 	public int getNumButtons() {
 		return 0;
 
@@ -230,7 +306,7 @@ public class TalkBoxApp extends Application {
 		try {
 			Builder b = Builder.openSerializedFile(Utilities.configFileChoose(new Stage()));
 			TalkBoxApp a = new TalkBoxApp(b);
-			BorderPane c = a.getPane();
+			/*BorderPane c = a.getPane();
 			Stage primaryStage = new Stage();
 			primaryStage.setTitle("TalkBox Application");
 			Scene scene = new Scene(c, 900, 650);
@@ -238,6 +314,8 @@ public class TalkBoxApp extends Application {
 			scene.getStylesheets().add(css);
 			primaryStage.setScene(scene);
 			primaryStage.show();
+			*/
+			a.buildApplication(new Stage());
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
