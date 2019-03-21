@@ -2,9 +2,9 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"/>
-	<classpathentry kind="lib" path="C:/Users/EliteBook 8540w/Desktop/json-simple-1.1.jar"/>
-	<classpathentry kind="lib" path="C:/Users/EliteBook 8540w/Desktop/java-json.jar"/>
-	<classpathentry kind="lib" path="C:/Users/EliteBook 8540w/Downloads/jsoup-1.11.3.jar"/>
-	<classpathentry kind="lib" path="C:/Users/EliteBook 8540w/Downloads/voicerss_tts_java/voicerss_tts.jar"/>
+	<classpathentry kind="lib" path="libs/java-json.jar"/>
+	<classpathentry kind="lib" path="libs/json-simple-1.1.jar"/>
+	<classpathentry kind="lib" path="libs/jsoup-1.11.3.jar"/>
+	<classpathentry kind="lib" path="libs/voicerss_tts.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
