@@ -7,6 +7,12 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.logging.FileHandler;
+import java.util.logging.Formatter;
+import java.util.logging.Level;
+import java.util.logging.LogRecord;
+import java.util.logging.Logger;
+
 import config.AudioButton;
 import config.Builder;
 import config.Utilities;
@@ -37,6 +43,9 @@ import javafx.util.Callback;
 public class TalkBoxApp extends Application {
 	// class which builds GUI for talkbox application
 	// similar to config gui
+	
+	// set up for logging 
+	private static final Logger logr = Logger.getLogger(TalkBoxApp.class.getName());
 
 	Image[] images;
 	String[] names;
@@ -50,6 +59,8 @@ public class TalkBoxApp extends Application {
 	public Builder builder;
 	public int numSetButtons;
 	public int numberPages;
+	volatile boolean audioPlaying = false;
+
 
 	public static void main(String[] args) {
 		launch(args);
@@ -126,73 +137,20 @@ public class TalkBoxApp extends Application {
 		primaryStage.show();
 	}
 	
-	public BorderPane buildTalkBoxApp(Builder builder) throws IOException{
-		names = new String[50];
-		images = new Image[50];
-		audioFiles = new Media[50];
-		appPane = new BorderPane();
-		mainFlow = new FlowPane();
-		MenuBar topMenu = builder.buildTopMenu();
-		appPane.setCenter(mainFlow);
-		appPane.setTop(topMenu);
-		audioCard = new VBox();
-		audioCard.setMaxWidth(160);
-		audioCard.setMaxHeight(210);
-		cardFlow = new FlowPane();
-		cardFlow.setOrientation(Orientation.VERTICAL);
-		cardFlow.setHgap(10);
-		// setPane(new GridPane());
-		// getPane().setPrefSize(500, 500);
-		// getPane().setVgap(10);
-		// getPane().setHgap(10);
-		for (int i = 0; i < builder.getSetButtons(); i++) {
-			// if (i > 0 && i % 6 == 0) {
-			// increment++;
-			// }
-			AudioButton button = builder.buttons.get(i);
-			names[i] = button.getName();
-			// TextField textField = new TextField();
-			// textField.setText(button.getName());
-			play = new Button(button.getName());
-			play.setMaxWidth(149);
-			play.setMaxHeight(74);
-			play.setOnMouseClicked(new EventHandler<MouseEvent>() {
-				public void handle(MouseEvent me) {
-					File f = new File(button.getAudioPath());
-					URI u = f.toURI();
-					Media sound = new Media(u.toString());
-					MediaPlayer mediaPlayer = new MediaPlayer(sound);
-					mediaPlayer.setVolume(builder.volume);
-					mediaPlayer.play();
-				}
-			});
-			images[i] = new Image(new FileInputStream(button.ImagePath));
-			imgv = new ImageView();
-			imgv.setFitWidth(149);
-			imgv.setFitHeight(124);
-			imgv.setImage(images[i]);
-			imgv.setPreserveRatio(true);
-			imgv.setSmooth(true);
-			imgv.setCache(true);
-			imgv.setOnMouseClicked(e -> {
-				File f = new File(button.getAudioPath());
-				URI u = f.toURI();
-				Media sound = new Media(u.toString());
-				MediaPlayer mediaPlayer = new MediaPlayer(sound);
-				mediaPlayer.setVolume(builder.volume);
-				mediaPlayer.play();
-			});
-			// GridPane.setConstraints(textField, i % 6, 2 + 2 * increment);
-			// GridPane.setConstraints(iv1, i % 6, 1 + 2 * increment);
-			// getPane().getChildren().addAll(imgv, textField);
-			cardFlow.getChildren().addAll(imgv, play);
-		}
-		audioCard.getChildren().add(cardFlow);
-		mainFlow.getChildren().add(audioCard);
-		ToolBar botToolBar = buildBotToolbar();
-		appPane.setBottom(botToolBar);
-		return appPane;
+
+	
+	public ImageView buildStopImage() throws FileNotFoundException {
+		String s = getClass().getResource("/resources/stopbutton.png").toExternalForm();
+		Image img = new Image(s);
+		ImageView iv1 = new ImageView();
+		iv1.setImage(img);
+		iv1.setFitWidth(75);
+		iv1.setPreserveRatio(true);
+		iv1.setSmooth(true);
+		iv1.setCache(true);
+		return iv1;
 	}
+
 	
 	public GridPane buildApp(int pageNumber) throws FileNotFoundException {
 		GridPane gridpane = new GridPane();
@@ -206,7 +164,31 @@ public class TalkBoxApp extends Application {
 		else{
 			numButtons = numSetButtons - ((numberPages - 1) * 6);
 		}
+		/*try { // bad method
+			logr.setLevel(Level.ALL);
+			String resourcePath = System.getProperty("user.home") + File.separatorChar + "TalkBoxData" + File.separatorChar;
+			File f = new File(resourcePath + "UserLogs" + File.separatorChar + builder.filename + ".log");
+			if(f.exists() == false) {
+				f.createNewFile();
+			}
+			FileHandler fh = new FileHandler(resourcePath + "UserLogs" + File.separatorChar + builder.filename + ".log", 8096, 1, false);
+			fh.setLevel(Level.FINEST);
+			fh.setFormatter(new Formatter() {
+			   public String format(LogRecord record) {
+			        return 
+			           record.getMessage() + "\n";
+			      }
+			    });
+			logr.addHandler(fh);
+			}
+			catch(IOException e) {
+				e.printStackTrace();
+			}	 
+		*/
 		for (int i = pageNumber * 6; i < (pageNumber * 6) + numButtons; i++) {
+			ImageView stop = buildStopImage();
+			stop.setDisable(true);
+			stop.setOpacity(0);
 			int k = i;
 			k = (k >= builder.buttons.size() ? builder.buttons.size() - 1 : k);
 			int j = k;
@@ -214,14 +196,55 @@ public class TalkBoxApp extends Application {
 			iv1.setImage(new Image(new FileInputStream(builder.buttons.get(j).getImagePath())));
 			iv1.setOnMouseClicked(e -> {
 				try {
-					builder.imageHandle(builder.buttons.get(j).getAudioPath());
+					MediaPlayer p = builder.imageHandle(builder.buttons.get(j).getAudioPath());
+					p.setOnPlaying(()->{
+						builder.buttons.get(j).press();
+						builder.saveSerializedFile(); // method 1 save constantly
+						/*String outputLog = "";
+						for(AudioButton b: builder.buttons) { // method 2 input into log file but forces reading of log files before every configuration
+							if(b != null) {
+								outputLog += b.getName() + " " + b.getPresses();
+							}
+						}
+						logr.fine(outputLog);
+						*/
+						audioPlaying = true;
+						iv1.setOpacity(0);
+						stop.setOpacity(100);
+						iv1.setDisable(true);
+						stop.setDisable(false);
+						stop.setOnMouseClicked(z->{
+							audioPlaying = false;
+							iv1.setDisable(false);
+							stop.setDisable(true);
+							stop.setOpacity(0);
+							iv1.setOpacity(100);
+							audioPlaying = false;
+							p.stop();
+						});
+					});
+					p.setOnEndOfMedia(()->{
+						iv1.setDisable(false);
+						stop.setDisable(true);
+						stop.setOpacity(0);
+						iv1.setOpacity(100);
+						audioPlaying = false;
+						//iv1.setImage(new Image(new FileInputStream(currentButton.getImagePath())));
+					});
+					if(!audioPlaying){
+						p.play();
+						iv1.setDisable(false);
+						stop.setDisable(true);
+						stop.setOpacity(0);
+						iv1.setOpacity(100);
+					}
 				} catch (InterruptedException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
+					audioPlaying = false;
 				}
 			});
 			GridPane.setConstraints(iv1, j % 6, 4 + 2);
-			gridpane.getChildren().addAll(iv1);
+			GridPane.setConstraints(stop, j % 6, 3 + 2);
+			gridpane.getChildren().addAll(stop, iv1);
 		}
 		return gridpane;
 	}
@@ -243,34 +266,7 @@ public class TalkBoxApp extends Application {
 		return audioFiles;
 	}
 
-	// public GridPane buildApp() {
-	// int increment = 0;
-	// GridPane gridpane = new GridPane();
-	// gridpane.setPrefSize(500, 500);
-	// gridpane.setVgap(10);
-	// gridpane.setHgap(10);
-	// for (int i = 0; i < getNumButtons(); i++) {
-	// if (i > 0 && i % 6 == 0) {
-	// increment++;
-	// }
-	// Image img = images[i];
-	// System.out.println(names[i]);
-	// TextField textField = new TextField();
-	// textField.setText(names[i]);
-	// ImageView iv1 = new ImageView();
-	// iv1.setImage(img);
-	// iv1.setFitWidth(100);
-	// iv1.setPreserveRatio(true);
-	// iv1.setSmooth(true);
-	// iv1.setCache(true);
-	//// GridPane.setConstraints(textField, i % 6, 2 + 2 * increment);
-	//// GridPane.setConstraints(iv1, i % 6, 1 + 2 * increment);
-	// gridpane.getChildren().addAll(iv1, textField);
-	// }
-	//
-	// return gridpane;
-	//
-	// }
+
 
 	public BorderPane getPane() {
 		return appPane;
@@ -299,7 +295,7 @@ public class TalkBoxApp extends Application {
 		try {
 			Builder config = new Builder();
 			Stage stage = new Stage();
-			FlowPane fp = config.buildFlowPane(stage);
+			FlowPane fp = config.buildWelcomeScreen(stage);
 			Scene scene = new Scene(fp, 310, 440);
 			stage.setScene(scene);
 			stage.show();

@@ -32,6 +32,8 @@ public class AudioButton implements Serializable{		//class that defines AudioBut
 	 */
 	public String ImagePath;
 	
+	public int presses;
+	
 	/**
 	 * Constructs an empty AudioButton
 	 */
@@ -39,6 +41,7 @@ public class AudioButton implements Serializable{		//class that defines AudioBut
 		this.name = "";
 		this.AudioPath = "";
 		this.ImagePath = "";
+		this.presses = 0;
 	}
 	
 	/**
@@ -52,6 +55,15 @@ public class AudioButton implements Serializable{		//class that defines AudioBut
 		this.name = name;
 		this.AudioPath = AudioPath;
 		this.ImagePath = ImagePath;
+		this.presses = 0;
+	}
+	
+	public void press() {
+		this.presses++;
+	}
+	
+	public int getPresses() {
+		return this.presses;
 	}
 	
 	/**

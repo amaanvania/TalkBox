@@ -14,6 +14,7 @@ import java.nio.file.FileSystems;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.*;
 
 import javax.imageio.ImageIO;
 
@@ -57,13 +58,17 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 
+
 public class Builder extends Application implements TalkBoxConfiguration {
 	/**
 	* 
 	*/
 	private static final long serialVersionUID = 1L;
 	// class which builds the gui for config application
-
+	
+	// set up for logging 
+	private static final Logger logr = Logger.getLogger(Builder.class.getName());
+	
 	/**
 	 * 
 	 */
@@ -127,11 +132,21 @@ public class Builder extends Application implements TalkBoxConfiguration {
 	}
 
 	/*
+	 * 
 	 * Method which builds the "new Project" button on welcome screen
 	 */
 	public Button buildNewProject(Stage primaryStage) {
 		Button button = new Button("New Project");
-		button.setTooltip(new Tooltip("Click to Start New Project"));
+		String resourcePath = Utilities.resourcePath + File.separatorChar;
+		new File(resourcePath).mkdirs(); // building directories so that logging can start right away
+		new File(resourcePath + "UserLogs").mkdir();
+		button.setTooltip(new Tooltip("Click to  New Project"));
+		try {
+			new File(resourcePath + "UserLogs" + File.separatorChar + "ConfigLogs.log").createNewFile(); // universal log for all user config actions
+		}
+		catch(IOException e) {
+			e.printStackTrace();
+		}	
 		button.setOnAction(e -> {
 			try {
 				buildInitialGui(primaryStage, pagination());
@@ -140,6 +155,7 @@ public class Builder extends Application implements TalkBoxConfiguration {
 		});
 		return button;
 	}
+	
 
 	/*
 	 * Method which builds the initial "Welcome Screen" Gui for talkBox config
@@ -160,61 +176,9 @@ public class Builder extends Application implements TalkBoxConfiguration {
 		return f;
 
 	}
+	
+	
 
-	/*
-	 * Method which builds the frame when "new Project" button is clicked
-	 */
-	public FlowPane buildFlowPane(Stage primaryStage) throws FileNotFoundException {
-		HBox hb = new HBox();
-		FlowPane s = buildSlider();
-		Button submit = new Button("Submit");
-		submit.setTooltip(new Tooltip("Click Submit to Start Configuration"));
-		submit.setOnAction(e -> {
-			try {
-				if (numTotalButtons < 1) {
-					Alert alert = new Alert(AlertType.WARNING);
-					alert.setTitle("Warning Dialog");
-					alert.setHeaderText("Warning! Zero Buttons");
-					alert.setContentText("Set more than 0 buttons");
-					alert.showAndWait();
-				} else
-					buildInitialGui(primaryStage, pagination());
-			} catch (IOException e1) {
-				e1.printStackTrace();
-			}
-		});
-		HBox hb2 = new HBox();
-		hb2.getChildren().addAll(s);
-		hb2.setAlignment(Pos.CENTER);
-		hb.getChildren().addAll(submit);
-		hb.setAlignment(Pos.BOTTOM_CENTER);
-		hb.setSpacing(10);
-		FlowPane g = new FlowPane(Orientation.VERTICAL);
-		g.setColumnHalignment(HPos.CENTER);
-		g.setPrefWrapLength(200);
-		g.setVgap(20);
-		g.setHgap(20);
-		g.setAlignment(Pos.BOTTOM_CENTER);
-		g.getChildren().addAll(buildImage(), hb2, hb);
-		return g;
-	}
-
-	/*
-	 * Method which builds GUI when "new Project" button is chosen
-	 */
-	public void newButtonPrompt(Stage primaryStage) throws FileNotFoundException { // GUI
-																					// for
-																					// initial
-																					// prompt
-		FlowPane hb = buildFlowPane(primaryStage);
-		hb.setVgap(20);
-		primaryStage.setTitle("TalkBox Config App");
-		Scene scene = new Scene(hb, 320, 450);
-		String css = this.getClass().getResource("/resources/buttonstyle.css").toExternalForm();
-		scene.getStylesheets().add(css);
-		primaryStage.setScene(scene);
-		primaryStage.show();
-	}
 	public ImageView buildStopImage() throws FileNotFoundException {
 		String s = getClass().getResource("/resources/stopbutton.png").toExternalForm();
 		Image img = new Image(s);
@@ -227,37 +191,9 @@ public class Builder extends Application implements TalkBoxConfiguration {
 		return iv1;
 	}
 
-	/*
-	 * Method which builds slider to define number of Buttons
-	 */
-	public FlowPane buildSlider() {
-		numTotalButtons = 1;
-		final Label instances = new Label("Number of Buttons: 1");
-		final Slider slider = new Slider(0, 18, 1);
-		slider.setPrefWidth(250);
-		slider.setShowTickMarks(true);
-		slider.setShowTickLabels(true);
-		slider.setMajorTickUnit(6);
-		slider.setBlockIncrement(1);
-		slider.setTooltip(new Tooltip("Drag Slider to set Number of Buttons"));
-		slider.valueProperty().addListener(new ChangeListener<Number>() {
-			@Override
-			public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
-				numTotalButtons = newValue.intValue();
-				instances.textProperty().setValue("Number of Buttons: " + newValue.intValue());
-			}
-		});
 
-		final VBox box = new VBox(20, instances, slider);
-		box.setAlignment(Pos.CENTER);
-		final FlowPane layout = new FlowPane(20, 20, box);
-		layout.setPadding(new Insets(20));
-		layout.setAlignment(Pos.CENTER);
 
-		return layout;
-
-	}
-
+ 
 	public MenuBar buildTopMenu() {
 		Menu helps = new Menu("Help"); // help dropdown
 		MenuItem help = new MenuItem("User manual");
@@ -289,7 +225,16 @@ public class Builder extends Application implements TalkBoxConfiguration {
 				e1.printStackTrace();
 			}
 		});
-		helps.getItems().addAll(help, contact, bugReport);
+		MenuItem uses = new MenuItem("Uses");
+		uses.setOnAction(e -> {
+				for(AudioButton b: buttons) {
+					if(b != null) {
+						System.out.println(b.getName() + ": " + b.getPresses());
+					}
+				}	
+		});
+		
+		helps.getItems().addAll(help, contact, bugReport, uses);
 
 		Menu volumes = new Menu("Volume"); // volume drop down
 		CustomMenuItem volumesOne = new CustomMenuItem();
@@ -420,6 +365,7 @@ public class Builder extends Application implements TalkBoxConfiguration {
 		save.setOnMouseClicked(e -> {
 			if (file == null)
 				file = Utilities.configFileSave(new Stage());
+				this.filename = Utilities.getFileName();
 			saveSerializedFile(); // append each button to file
 		});
 		return save;
@@ -764,6 +710,8 @@ public class Builder extends Application implements TalkBoxConfiguration {
 		numSetButtons = i;
 		return numSetButtons;
 	}
+	
+
 
 	/*
 	 * Method to open "Existing" serialized File Launches a fileChooser and
