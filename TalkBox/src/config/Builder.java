@@ -220,7 +220,7 @@ public class Builder extends Application implements TalkBoxConfiguration {
 		Image img = new Image(s);
 		ImageView iv1 = new ImageView();
 		iv1.setImage(img);
-		iv1.setFitWidth(75);
+		iv1.setFitWidth(100);
 		iv1.setPreserveRatio(true);
 		iv1.setSmooth(true);
 		iv1.setCache(true);
@@ -499,11 +499,18 @@ public class Builder extends Application implements TalkBoxConfiguration {
 		d.setContentText("Set Text");
 		d.showAndWait();
 		String input = d.getResult();
+		File f = new File(WebDownloader.ImagePath + input + ".jpg");
+		File p = new File(WebDownloader.audioPath + input + ".wav");
+		if(f.exists() && p.exists()){
+			b.setImagePath(WebDownloader.ImagePath + input + ".jpg");
+			b.setAudioPath(WebDownloader.audioPath + input + ".wav");
+			b.setName(input);
+		}else{
 		WebDownloader.downloadAutomatic(input);
-		System.out.println("downloading: " + input);
 		b.setImagePath(WebDownloader.ImagePath + input + ".jpg");
 		b.setAudioPath(WebDownloader.audioPath + input + ".wav");
 		b.setName(input);
+		}
 	}
 
 	/*
@@ -639,7 +646,8 @@ public class Builder extends Application implements TalkBoxConfiguration {
 			TextField textField;
 			textField = (buttons.get(k) == null) ? new TextField("") : new TextField(currentButton.getName());
 			Button edit = buildButton(k, textField);
-			Button buildAuto = new Button("Build Automatic");
+			Button buildAuto = new Button("AutoFill");
+			buildAuto.setPrefSize(100, 20);
 			buildAuto.setOnAction(e-> {
 				try {
 					buttons.set(j,currentButton);
@@ -702,7 +710,6 @@ public class Builder extends Application implements TalkBoxConfiguration {
 						stop.setOpacity(0);
 						iv1.setOpacity(100);
 						audioPlaying = false;
-						//iv1.setImage(new Image(new FileInputStream(currentButton.getImagePath())));
 					});
 					if(!audioPlaying){
 						p.play();
@@ -718,7 +725,7 @@ public class Builder extends Application implements TalkBoxConfiguration {
 			GridPane.setConstraints(buildAuto, j % 6, 6 + 2);
 			GridPane.setConstraints(edit, j % 6, 5 + 2);
 			GridPane.setConstraints(iv1, j % 6, 4 + 2);
-			GridPane.setConstraints(stop, j % 6, 3 + 2);
+			GridPane.setConstraints(stop, j % 6, 4 + 2);
 			gridpane.getChildren().addAll(stop,iv1, edit,buildAuto);
 		}
 		return gridpane;
