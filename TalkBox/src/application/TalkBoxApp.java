@@ -210,18 +210,17 @@ public class TalkBoxApp extends Application {
 			int k = i;
 			k = (k >= builder.buttons.size() ? builder.buttons.size() - 1 : k);
 			int j = k;
+			ImageView stop = builder.buildStopImage();
+			stop.setDisable(true);
+			stop.setOpacity(0);
 			ImageView iv1 = builder.buildImageView();
 			iv1.setImage(new Image(new FileInputStream(builder.buttons.get(j).getImagePath())));
 			iv1.setOnMouseClicked(e -> {
-				try {
-					builder.imageHandle(builder.buttons.get(j).getAudioPath());
-				} catch (InterruptedException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
-			});
+				builder.playSound(j,stop,iv1);
+			});	
 			GridPane.setConstraints(iv1, j % 6, 4 + 2);
-			gridpane.getChildren().addAll(iv1);
+			GridPane.setConstraints(stop, j % 6, 4 + 2);
+			gridpane.getChildren().addAll(iv1,stop);
 		}
 		return gridpane;
 	}

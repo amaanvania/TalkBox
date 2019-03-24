@@ -215,6 +215,7 @@ public class Builder extends Application implements TalkBoxConfiguration {
 		primaryStage.setScene(scene);
 		primaryStage.show();
 	}
+
 	public ImageView buildStopImage() throws FileNotFoundException {
 		String s = getClass().getResource("/resources/stopbutton.png").toExternalForm();
 		Image img = new Image(s);
@@ -493,23 +494,23 @@ public class Builder extends Application implements TalkBoxConfiguration {
 		File f = new File(filepath);
 		return f.getAbsolutePath().endsWith(".wav") || f.getAbsolutePath().endsWith(".mp3");
 	}
-	
-	public void buildAutomaticButton(AudioButton b) throws Exception{
+
+	public void buildAutomaticButton(AudioButton b) throws Exception {
 		TextInputDialog d = new TextInputDialog("Enter random word");
 		d.setContentText("Set Text");
 		d.showAndWait();
 		String input = d.getResult();
 		File f = new File(WebDownloader.ImagePath + input + ".jpg");
 		File p = new File(WebDownloader.audioPath + input + ".wav");
-		if(f.exists() && p.exists()){
+		if (f.exists() && p.exists()) {
 			b.setImagePath(WebDownloader.ImagePath + input + ".jpg");
 			b.setAudioPath(WebDownloader.audioPath + input + ".wav");
 			b.setName(input);
-		}else{
-		WebDownloader.downloadAutomatic(input);
-		b.setImagePath(WebDownloader.ImagePath + input + ".jpg");
-		b.setAudioPath(WebDownloader.audioPath + input + ".wav");
-		b.setName(input);
+		} else {
+			WebDownloader.downloadAutomatic(input);
+			b.setImagePath(WebDownloader.ImagePath + input + ".jpg");
+			b.setAudioPath(WebDownloader.audioPath + input + ".wav");
+			b.setName(input);
 		}
 	}
 
@@ -648,9 +649,9 @@ public class Builder extends Application implements TalkBoxConfiguration {
 			Button edit = buildButton(k, textField);
 			Button buildAuto = new Button("AutoFill");
 			buildAuto.setPrefSize(100, 20);
-			buildAuto.setOnAction(e-> {
+			buildAuto.setOnAction(e -> {
 				try {
-					buttons.set(j,currentButton);
+					buttons.set(j, currentButton);
 					buildAutomaticButton(buttons.get(j));
 					iv1.setImage(new Image(new FileInputStream(buttons.get(j).getImagePath())));
 					Utilities.ImagePath = buttons.get(j).getImagePath();
@@ -686,49 +687,53 @@ public class Builder extends Application implements TalkBoxConfiguration {
 				}
 			});
 			iv1.setOnMouseClicked(e -> {
-				try {
-					MediaPlayer p = imageHandle(buttons.get(j).getAudioPath());
-					p.setOnPlaying(()->{
-						audioPlaying = true;
-						iv1.setOpacity(0);
-						stop.setOpacity(100);
-						iv1.setDisable(true);
-						stop.setDisable(false);
-						stop.setOnMouseClicked(z->{
-							audioPlaying = false;
-							iv1.setDisable(false);
-							stop.setDisable(true);
-							stop.setOpacity(0);
-							iv1.setOpacity(100);
-							audioPlaying = false;
-							p.stop();
-						});
-					});
-					p.setOnEndOfMedia(()->{
-						iv1.setDisable(false);
-						stop.setDisable(true);
-						stop.setOpacity(0);
-						iv1.setOpacity(100);
-						audioPlaying = false;
-					});
-					if(!audioPlaying){
-						p.play();
-						iv1.setDisable(false);
-						stop.setDisable(true);
-						stop.setOpacity(0);
-						iv1.setOpacity(100);
-					}
-				} catch (InterruptedException e1) {
-					audioPlaying = false;
-				}
+				playSound(j, stop, iv1);
 			});
 			GridPane.setConstraints(buildAuto, j % 6, 6 + 2);
 			GridPane.setConstraints(edit, j % 6, 5 + 2);
 			GridPane.setConstraints(iv1, j % 6, 4 + 2);
 			GridPane.setConstraints(stop, j % 6, 4 + 2);
-			gridpane.getChildren().addAll(stop,iv1, edit,buildAuto);
+			gridpane.getChildren().addAll(stop, iv1, edit, buildAuto);
 		}
 		return gridpane;
+	}
+
+	public void playSound(int j, ImageView stop, ImageView iv1) {
+		try {
+			MediaPlayer p = imageHandle(buttons.get(j).getAudioPath());
+			p.setOnPlaying(() -> {
+				audioPlaying = true;
+				iv1.setOpacity(0);
+				stop.setOpacity(100);
+				iv1.setDisable(true);
+				stop.setDisable(false);
+				stop.setOnMouseClicked(z -> {
+					audioPlaying = false;
+					iv1.setDisable(false);
+					stop.setDisable(true);
+					stop.setOpacity(0);
+					iv1.setOpacity(100);
+					audioPlaying = false;
+					p.stop();
+				});
+			});
+			p.setOnEndOfMedia(() -> {
+				iv1.setDisable(false);
+				stop.setDisable(true);
+				stop.setOpacity(0);
+				iv1.setOpacity(100);
+				audioPlaying = false;
+			});
+			if (!audioPlaying) {
+				p.play();
+				iv1.setDisable(false);
+				stop.setDisable(true);
+				stop.setOpacity(0);
+				iv1.setOpacity(100);
+			}
+		} catch (InterruptedException e1) {
+			audioPlaying = false;
+		}
 	}
 
 	private Button buildButton(int i, TextField textField) {
