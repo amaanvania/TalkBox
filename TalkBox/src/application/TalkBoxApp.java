@@ -298,7 +298,7 @@ public class TalkBoxApp extends Application {
 		try {
 			Builder config = new Builder();
 			Stage stage = new Stage();
-			FlowPane fp = config.buildFlowPane(stage);
+			FlowPane fp = config.buildWelcomeScreen(stage);
 			Scene scene = new Scene(fp, 310, 440);
 			stage.setScene(scene);
 			stage.show();
