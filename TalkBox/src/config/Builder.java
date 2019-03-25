@@ -123,6 +123,7 @@ public class Builder extends Application implements TalkBoxConfiguration {
 		button.setOnAction(e -> {
 			try {
 				openSerializedFile(primaryStage);
+				logr.fine("hello");
 			} catch (IOException e1) {
 			}
 		});
