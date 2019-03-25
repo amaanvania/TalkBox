@@ -162,9 +162,10 @@ public class Builder extends Application implements TalkBoxConfiguration {
 	}
 
 	/*
+	 * OUT DATED
 	 * Method which builds the frame when "new Project" button is clicked
 	 */
-	public FlowPane buildFlowPane(Stage primaryStage) throws FileNotFoundException {
+	/* public FlowPane buildFlowPane(Stage primaryStage) throws FileNotFoundException {
 		HBox hb = new HBox();
 		FlowPane s = buildSlider();
 		Button submit = new Button("Submit");
@@ -198,11 +199,13 @@ public class Builder extends Application implements TalkBoxConfiguration {
 		g.getChildren().addAll(buildImage(), hb2, hb);
 		return g;
 	}
+	*/
 
 	/*
+	 * OUT DATED
 	 * Method which builds GUI when "new Project" button is chosen
 	 */
-	public void newButtonPrompt(Stage primaryStage) throws FileNotFoundException { // GUI
+	/*public void newButtonPrompt(Stage primaryStage) throws FileNotFoundException { // GUI
 																					// for
 																					// initial
 																					// prompt
@@ -215,6 +218,7 @@ public class Builder extends Application implements TalkBoxConfiguration {
 		primaryStage.setScene(scene);
 		primaryStage.show();
 	}
+	*/
 
 	public ImageView buildStopImage() throws FileNotFoundException {
 		String s = getClass().getResource("/resources/stopbutton.png").toExternalForm();
@@ -229,8 +233,10 @@ public class Builder extends Application implements TalkBoxConfiguration {
 	}
 
 	/*
+	 * OUT DATED
 	 * Method which builds slider to define number of Buttons
 	 */
+	/*
 	public FlowPane buildSlider() {
 		numTotalButtons = 1;
 		final Label instances = new Label("Number of Buttons: 1");
@@ -258,6 +264,7 @@ public class Builder extends Application implements TalkBoxConfiguration {
 		return layout;
 
 	}
+	*/
 
 	public MenuBar buildTopMenu() {
 		Menu helps = new Menu("Help"); // help dropdown
