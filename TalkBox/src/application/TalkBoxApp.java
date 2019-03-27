@@ -7,6 +7,14 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.time.LocalDateTime;
+import java.util.logging.FileHandler;
+import java.util.logging.Formatter;
+import java.util.logging.Handler;
+import java.util.logging.Level;
+import java.util.logging.LogRecord;
+import java.util.logging.Logger;
+
 import config.AudioButton;
 import config.Builder;
 import config.Utilities;
@@ -38,6 +46,8 @@ public class TalkBoxApp extends Application {
 	// class which builds GUI for talkbox application
 	// similar to config gui
 
+	private static final Logger logr = Logger.getLogger(Builder.class.getName());
+
 	Image[] images;
 	String[] names;
 	Media[] audioFiles;
@@ -50,6 +60,7 @@ public class TalkBoxApp extends Application {
 	public Builder builder;
 	public int numSetButtons;
 	public int numberPages;
+	
 
 	public static void main(String[] args) {
 		launch(args);
@@ -114,7 +125,7 @@ public class TalkBoxApp extends Application {
 	
 	public void buildApplication(Stage primaryStage) throws IOException {
 		ToolBar botToolBar = buildBotToolbar();
-		MenuBar topToolBar = builder.buildTopMenu();
+		MenuBar topToolBar = builder.buildTopMenu(logr);
 		BorderPane appPane = new BorderPane();
 		appPane.setCenter(pagination());
 		appPane.setTop(topToolBar);
@@ -126,7 +137,7 @@ public class TalkBoxApp extends Application {
 		primaryStage.show();
 	}
 	
-	public BorderPane buildTalkBoxApp(Builder builder) throws IOException{
+	/*public BorderPane buildTalkBoxApp(Builder builder) throws IOException{
 		names = new String[50];
 		images = new Image[50];
 		audioFiles = new Media[50];
@@ -193,8 +204,31 @@ public class TalkBoxApp extends Application {
 		appPane.setBottom(botToolBar);
 		return appPane;
 	}
-	
+	*/
 	public GridPane buildApp(int pageNumber) throws FileNotFoundException {
+		File simLog = new File(Utilities.logPath + builder.filename + "Sim.log");
+		logr.setLevel(Level.ALL);
+		for(Handler aaa : logr.getHandlers()) {
+			aaa.close();
+			logr.removeHandler(aaa);
+		}
+		FileHandler fh = null;
+		if(simLog.exists()) { //checking if the log was already created if so use the already created file to log
+			try {
+				fh = new FileHandler(Utilities.logPath + builder.filename + "Sim.log", 8096, 1, true);
+				fh.setLevel(Level.FINEST);
+				fh.setFormatter(new Formatter() {
+				   public String format(LogRecord record) {
+				        return 
+				        		LocalDateTime.now().toString() + " " + record.getMessage() + "\n";
+				      }
+				    });
+				logr.addHandler(fh);
+			}
+			catch(IOException e) {
+				e.printStackTrace();
+			}
+		}
 		GridPane gridpane = new GridPane();
 		gridpane.setPrefSize(500, 500);
 		gridpane.setVgap(10);
@@ -216,7 +250,7 @@ public class TalkBoxApp extends Application {
 			ImageView iv1 = builder.buildImageView();
 			iv1.setImage(new Image(new FileInputStream(builder.buttons.get(j).getImagePath())));
 			iv1.setOnMouseClicked(e -> {
-				builder.playSound(j,stop,iv1);
+				builder.playSound(j,stop,iv1, logr, false);
 			});	
 			GridPane.setConstraints(iv1, j % 6, 4 + 2);
 			GridPane.setConstraints(stop, j % 6, 4 + 2);
@@ -282,6 +316,25 @@ public class TalkBoxApp extends Application {
 	@Override
 	public void start(Stage primaryStage) {
 		try {
+			File sourcePath = new File(Utilities.resourcePath);
+			if(!sourcePath.exists()) {
+				try {
+					sourcePath.mkdir();
+				}
+				catch(SecurityException e) {
+					e.printStackTrace();
+				}	
+				
+			}
+			File logPath = new File(Utilities.logPath); //building the directory for logging
+			if(!logPath.exists()) {
+				try {
+					logPath.mkdir();
+				}
+				catch(SecurityException e) {
+					e.printStackTrace();
+				}
+			}
 			Parent root = FXMLLoader.load(getClass().getResource("/resources/WelcomeScreen.fxml"));
 			Scene scene = new Scene(root, 900, 650);
 			scene.getStylesheets().add(getClass().getResource("/resources/WelcomeScreen.css").toExternalForm());

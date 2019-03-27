@@ -9,17 +9,19 @@ public class Stat {
 	public static int DeleteLastCounter = 0;
 	public static int DeleteSpecificCounter = 0;
 	
-	public static int AudioButtonsCreated = 0;
 	public static int AutofillAudioButtonCounter = 0;
 	public static int DragDropAudioButtonCounter = 0;
 	public static int TitlesSet = 0;
 	public static int ImagesSelected = 0;
 	public static int AudioTracksSelected = 0;
+	public static int AudioButtonsTested = 0;
+	public static int AudioButtonsTestedStop = 0;
+	public static int AudioButtonsEdited = 0;
+
 	
 	// Statistics for the TalkBox Simulator Application
 	public static int AudioButtonsPlayed = 0;
-	public static int AudioButtonsStopped= 0; // Also applies to the Configuration Application
-	public static int AudioButtonsEdited = 0;
+	public static int AudioButtonsStopped= 0; 
 	
 	
 	// General Statistics

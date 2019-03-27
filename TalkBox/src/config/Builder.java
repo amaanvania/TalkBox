@@ -10,10 +10,20 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.channels.FileChannel;
 import java.nio.file.FileSystems;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.FileHandler;
+import java.util.logging.Formatter;
+import java.util.logging.Handler;
+import java.util.logging.Level;
+import java.util.logging.LogRecord;
+import java.util.logging.Logger;
 
 import javax.imageio.ImageIO;
 
@@ -56,6 +66,7 @@ import javafx.scene.media.MediaPlayer;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Callback;
+import log.Stat;
 
 public class Builder extends Application implements TalkBoxConfiguration {
 	/**
@@ -63,7 +74,9 @@ public class Builder extends Application implements TalkBoxConfiguration {
 	*/
 	private static final long serialVersionUID = 1L;
 	// class which builds the gui for config application
-
+	
+	private static final Logger logr = Logger.getLogger(Builder.class.getName());
+	
 	/**
 	 * 
 	 */
@@ -130,6 +143,16 @@ public class Builder extends Application implements TalkBoxConfiguration {
 	 * Method which builds the "new Project" button on welcome screen
 	 */
 	public Button buildNewProject(Stage primaryStage) {
+		File defaultConfig = new File(Utilities.logPath + "defaultConfig.log"); //building temp files to log in
+		if(defaultConfig.exists()) //sometime this file will already exist 
+			defaultConfig.delete();
+		try {
+		defaultConfig.createNewFile();
+		}
+		catch(IOException ee) {
+			ee.printStackTrace();
+		}
+		defaultConfig.deleteOnExit();
 		Button button = new Button("New Project");
 		button.setTooltip(new Tooltip("Click to Start New Project"));
 		button.setOnAction(e -> {
@@ -266,7 +289,7 @@ public class Builder extends Application implements TalkBoxConfiguration {
 	}
 	*/
 
-	public MenuBar buildTopMenu() {
+	public MenuBar buildTopMenu(Logger log) {
 		Menu helps = new Menu("Help"); // help dropdown
 		MenuItem help = new MenuItem("User manual");
 		help.setId("help-config");
@@ -274,6 +297,8 @@ public class Builder extends Application implements TalkBoxConfiguration {
 			try {
 				Desktop.getDesktop().browse(new URI(
 						"https://github.com/amaanvania/TalkBox/blob/master/Documentation/TalkBoxUserManual.pdf"));
+				log.fine("Help: user manual opened");
+				Stat.UserManualCounter++;
 			} catch (IOException e1) {
 				e1.printStackTrace();
 			} catch (URISyntaxException e1) {
@@ -285,6 +310,8 @@ public class Builder extends Application implements TalkBoxConfiguration {
 		contact.setOnAction(e -> {
 			try {
 				Desktop.getDesktop().browse(new URI("https://github.com/amaanvania/TalkBox/wiki"));
+				log.fine("Help: contact us opened");
+				Stat.ContactUsCounter++;
 			} catch (IOException | URISyntaxException e1) {
 				e1.printStackTrace();
 			}
@@ -293,6 +320,8 @@ public class Builder extends Application implements TalkBoxConfiguration {
 		bugReport.setOnAction(e -> {
 			try {
 				Desktop.getDesktop().browse(new URI("https://github.com/amaanvania/TalkBox/issues"));
+				log.fine("Help: report issue opened");
+				Stat.ReportIssueCounter++;
 			} catch (IOException | URISyntaxException e1) {
 				e1.printStackTrace();
 			}
@@ -303,11 +332,10 @@ public class Builder extends Application implements TalkBoxConfiguration {
 		CustomMenuItem volumesOne = new CustomMenuItem();
 		final Slider vSlider = new Slider(0, 100, 100); // volume slider
 		volume = 100; // initial value for volume
-		vSlider.valueProperty().addListener(new ChangeListener<Number>() {
-			@Override
-			public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
-				volume = newValue.doubleValue() / 100.00;
-			}
+		vSlider.setOnMouseClicked(e -> {
+			volumeHandle(vSlider);
+			log.fine("VOLUME: volume changed to " + vSlider.getValue());
+			Stat.VolumeCounter++;
 		});
 		volumesOne.setContent(vSlider);
 		volumes.getItems().addAll(volumesOne);
@@ -316,6 +344,15 @@ public class Builder extends Application implements TalkBoxConfiguration {
 		menuBar.setId("Top-menu");
 		menuBar.getMenus().addAll(volumes, helps);
 		return menuBar;
+	}
+	
+	public void volumeHandle(Slider v) {
+		v.valueProperty().addListener(new ChangeListener<Number>() {
+			@Override
+			public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
+				volume = newValue.doubleValue() / 100.00;
+			}
+		});
 	}
 
 	public void recordHandle() throws FileNotFoundException {
@@ -375,6 +412,8 @@ public class Builder extends Application implements TalkBoxConfiguration {
 			try {
 				//
 				recordHandle();
+				logr.fine("Record: recording window opened");
+				Stat.RecordAudioCounter++;
 			} catch (FileNotFoundException e1) {
 				e1.printStackTrace();
 			}
@@ -403,12 +442,16 @@ public class Builder extends Application implements TalkBoxConfiguration {
 				if (getSetButtons() > 0 && this.file != null) {
 					TalkBoxApp a = new TalkBoxApp(openSerializedFile(file));
 					a.buildApplication(new Stage());
+					logr.fine("TEST: " + filename + " simulator being opened");
+					Stat.TestCounter++;
 				} else {
 					Alert alert = new Alert(AlertType.WARNING);
 					alert.setTitle("Warning Dialog");
 					alert.setHeaderText("Warning! Null File");
 					alert.setContentText("Save file before attempting to Play");
 					alert.showAndWait();
+					logr.fine("TEST: " +  "failed simulator opening");
+					Stat.TestCounter++;
 				}
 			} catch (IOException z) {
 				z.printStackTrace();
@@ -421,13 +464,55 @@ public class Builder extends Application implements TalkBoxConfiguration {
 	 * @return returns a save button that has the functionality to save the
 	 *         current state of the application
 	 */
-	private Button saveBtn() {
+	private Button saveBtn() throws IOException {
 		Button save = new Button("Save"); // save button
 		save.setId("save-config");
 		save.setTooltip(new Tooltip("Click to Save File"));
 		save.setOnMouseClicked(e -> {
-			if (file == null)
+			if (file == null) {
 				file = Utilities.configFileSave(new Stage());
+				if(file != null) {
+					filename = Utilities.getFileName();
+					logr.fine("Save button: " + "current config saved as " + filename);
+					Stat.SaveCounter++;
+				}
+				if(file == null) {
+					logr.fine("Save button: save failed or closed");
+					Stat.SaveCounter++;
+				}
+			}
+			if(file != null) {
+				File appendLog = new File(Utilities.logPath + filename + "Config.log");
+				File defaultConfig = new File(Utilities.logPath + "defaultConfig.log"); //building temp files to log in	
+				FileHandler fh = null;
+				if(!appendLog.exists()) {
+					try {
+						appendLog.createNewFile();
+						Files.copy(defaultConfig.toPath(), appendLog.toPath(), StandardCopyOption.REPLACE_EXISTING);
+						for(Handler aaa : logr.getHandlers()) {
+							aaa.close();
+							logr.removeHandler(aaa);
+						}
+						new File(Utilities.logPath + filename + "Sim.log").createNewFile();
+						fh = new FileHandler(Utilities.logPath + filename + "Config.log", 8096, 1, true);
+						fh.setLevel(Level.FINEST);
+						fh.setFormatter(new Formatter() {
+						   public String format(LogRecord record) {
+						        return 
+						        		LocalDateTime.now().toString() + " " + record.getMessage() + "\n";
+						      }
+						    });
+						logr.addHandler(fh);
+					} catch (IOException e1) {
+						e1.printStackTrace();
+					}
+				}
+				else {
+					logr.fine("Save button: " + filename + " saved");
+					Stat.SaveCounter++;
+	
+				}
+			}
 			saveSerializedFile(); // append each button to file
 		});
 		return save;
@@ -462,7 +547,7 @@ public class Builder extends Application implements TalkBoxConfiguration {
 		Alert alert = new Alert(AlertType.WARNING);
 		alert.setTitle("Warning!");
 		alert.setHeaderText("Warning! Invalid input");
-		alert.setContentText("Make sure input is valid.");
+		alert.setContentText("Make sure input is valid."); 
 		alert.showAndWait();
 	}
 
@@ -487,9 +572,15 @@ public class Builder extends Application implements TalkBoxConfiguration {
 		if (isImage(files.get(0).getAbsolutePath())) {
 			b.setImagePath(files.get(0).getAbsolutePath());
 			b.setName(files.get(0).getName());
+			logr.fine("Drag drop: " +  "image changed to " + Utilities.ImagePath);
+			Stat.DragDropAudioButtonCounter++;
 		}
-		if (isAudio(files.get(0).getAbsolutePath()))
+		if (isAudio(files.get(0).getAbsolutePath())) {
 			b.setAudioPath(files.get(0).getAbsolutePath());
+			logr.fine("Drag drop: " + "audio changed to " + Utilities.ImagePath);
+			Stat.DragDropAudioButtonCounter++;
+		}	
+		
 	}
 
 	public static boolean isImage(String filepath) throws IOException {
@@ -527,8 +618,47 @@ public class Builder extends Application implements TalkBoxConfiguration {
 	 * 
 	 */
 	public void buildInitialGui(Stage primaryStage, Pagination p) throws IOException {
+		logr.setLevel(Level.ALL);
+		for(Handler aaa : logr.getHandlers()) {
+			aaa.close();
+			logr.removeHandler(aaa);
+		}
+		File existFile = new File(Utilities.logPath + filename + "Config.log");
+		FileHandler fh = null;
+		if(existFile.exists()) { //checking if the log was already created if so use the already created file to log
+			try {
+				fh = new FileHandler(Utilities.logPath + filename + "Config.log", 8096, 1, true);
+				fh.setLevel(Level.FINEST);
+				fh.setFormatter(new Formatter() {
+				   public String format(LogRecord record) {
+				        return 
+				        		LocalDateTime.now().toString() + " " + record.getMessage() + "\n";
+				      }
+				    });
+				logr.addHandler(fh);
+			}
+			catch(IOException e) {
+				e.printStackTrace();
+			}
+		}
+		else { // using a default logging file that will be transfered to the a log file one saved
+			try {
+				fh = new FileHandler(Utilities.logPath + "defaultConfig.log", 8096, 1, true);
+				fh.setLevel(Level.FINEST);
+				fh.setFormatter(new Formatter() {
+				   public String format(LogRecord record) {
+				        return 
+				        		LocalDateTime.now().toString() + " " + record.getMessage() + "\n";
+				      }
+				    });
+				logr.addHandler(fh);
+			}
+			catch(IOException e) {
+				e.printStackTrace();
+			}
+		}
 		ToolBar botToolBar = buildBotToolbar(primaryStage);
-		MenuBar topMenu = buildTopMenu();
+		MenuBar topMenu = buildTopMenu(logr);
 		StackPane a = new StackPane();
 		p.setCurrentPageIndex(numPages - 1);
 		a.getChildren().addAll(botToolBar, topMenu, p);
@@ -577,6 +707,8 @@ public class Builder extends Application implements TalkBoxConfiguration {
 			Platform.runLater(() -> {
 				try {
 					buildInitialGui(primaryStage, pagination());
+					logr.fine("Add: new button added to the right");
+					Stat.AddNewCounter++;
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
@@ -595,6 +727,8 @@ public class Builder extends Application implements TalkBoxConfiguration {
 				if (numPages > 1 && (buttons.size() - 6) % 6 == 0)
 					numPages--;
 				buildInitialGui(primaryStage, pagination());
+				logr.fine("Delete: most right button deleted");
+				Stat.DeleteLastCounter++;
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
@@ -617,6 +751,8 @@ public class Builder extends Application implements TalkBoxConfiguration {
 				if (numPages > 1 && (buttons.size() - 6) % 6 == 0)
 					numPages--;
 				buildInitialGui(primaryStage, pagination());
+				logr.fine("Delete: button " + i  + " deleted");
+				Stat.DeleteSpecificCounter++;
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
@@ -665,6 +801,8 @@ public class Builder extends Application implements TalkBoxConfiguration {
 					Utilities.AudioPath = buttons.get(j).getAudioPath();
 					textField.setText(buttons.get(j).getName());
 					edit.setText(buttons.get(j).getName());
+					logr.fine("Autocomplete: button " + j + " autocompleted to " + buttons.get(j).getName());
+					Stat.AutofillAudioButtonCounter++;
 				} catch (Exception e2) {
 					e2.printStackTrace();
 				}
@@ -694,7 +832,8 @@ public class Builder extends Application implements TalkBoxConfiguration {
 				}
 			});
 			iv1.setOnMouseClicked(e -> {
-				playSound(j, stop, iv1);
+				playSound(j, stop, iv1, logr, true);
+
 			});
 			GridPane.setConstraints(buildAuto, j % 6, 6 + 2);
 			GridPane.setConstraints(edit, j % 6, 5 + 2);
@@ -705,7 +844,7 @@ public class Builder extends Application implements TalkBoxConfiguration {
 		return gridpane;
 	}
 
-	public void playSound(int j, ImageView stop, ImageView iv1) {
+	public void playSound(int j, ImageView stop, ImageView iv1, Logger log, Boolean choice) {
 		try {
 			MediaPlayer p = imageHandle(buttons.get(j).getAudioPath());
 			p.setOnPlaying(() -> {
@@ -714,6 +853,14 @@ public class Builder extends Application implements TalkBoxConfiguration {
 				stop.setOpacity(100);
 				iv1.setDisable(true);
 				stop.setDisable(false);
+				if(choice == true) {
+					log.fine("Played: " + buttons.get(j).getName() + " played");
+					Stat.AudioButtonsTested++;
+				} 
+				else if(choice == false){
+					log.fine("Played: " + buttons.get(j).getName() + " played");
+					Stat.AudioButtonsPlayed++;
+				}
 				stop.setOnMouseClicked(z -> {
 					audioPlaying = false;
 					iv1.setDisable(false);
@@ -722,6 +869,14 @@ public class Builder extends Application implements TalkBoxConfiguration {
 					iv1.setOpacity(100);
 					audioPlaying = false;
 					p.stop();
+					if(choice == true) {
+						log.fine("Stop: " + buttons.get(j).getName() + " audio stopped early");
+						Stat.AudioButtonsTestedStop++;
+					} 
+					else if(choice == false) {
+						log.fine("Stop: " + buttons.get(j).getName() + " audio stopped early");
+						Stat.AudioButtonsStopped++;
+					}
 				});
 			});
 			p.setOnEndOfMedia(() -> {
@@ -758,8 +913,22 @@ public class Builder extends Application implements TalkBoxConfiguration {
 			Image n = new Image(new FileInputStream(Utilities.ImagePath)); // sets
 			iv1.setImage(n);
 			Tooltip.install(iv1, new Tooltip("Click to Play Sound"));
+			logr.fine("Button " + k + " edited");
+			Stat.AudioButtonsEdited++;
+			if(!currentButton.getName().equals(edit.getText())) {
+				logr.fine("Button: " + k + " name changed to " + edit.getText());
+				Stat.TitlesSet++;
+			}
 			currentButton.setName(textField.getText());
+			if(!currentButton.getImagePath().equals(Utilities.ImagePath)) {
+				logr.fine("Button: " + currentButton.getName() + " " + "image changed to " + Utilities.ImagePath);
+				Stat.ImagesSelected++;
+			}
 			currentButton.setImagePath(Utilities.ImagePath);
+			if(!currentButton.getAudioPath().equals(Utilities.AudioPath)) {
+				logr.fine("Button: " + currentButton.getName() + " " + "audio changed to " + Utilities.AudioPath);
+				Stat.AudioTracksSelected++;
+			}
 			currentButton.setAudioPath(Utilities.AudioPath);
 			buttons.set(k, currentButton);
 		} catch (FileNotFoundException e1) {
@@ -863,7 +1032,6 @@ public class Builder extends Application implements TalkBoxConfiguration {
 		b.file = this.file;
 		double numPages = Math.ceil(newButtons.size() / 6.0);
 		b.numPages = (int) numPages;
-		System.out.println(b.numPages);
 		try {
 			FileOutputStream fileOut = new FileOutputStream(file);
 			ObjectOutputStream out = new ObjectOutputStream(fileOut);
@@ -878,6 +1046,31 @@ public class Builder extends Application implements TalkBoxConfiguration {
 	@Override
 	public void start(Stage primaryStage) throws Exception {
 		buildWelcomeScreen(primaryStage);
+		File sourcePath = new File(Utilities.resourcePath);
+		if(!sourcePath.exists()) {
+			try {
+				sourcePath.mkdir();
+			}
+			catch(SecurityException e) {
+				e.printStackTrace();
+			}	
+			
+		}
+		File logPath = new File(Utilities.logPath); //building the directory for logging
+		if(!logPath.exists()) {
+			try {
+				logPath.mkdir();
+			}
+			catch(SecurityException e) {
+				e.printStackTrace();
+			}
+		}
+		File defaultConfig = new File(Utilities.logPath + "defaultConfig.log"); //building temp files to log in
+		if(defaultConfig.exists()) //sometime this file will already exist 
+			defaultConfig.delete();
+		defaultConfig.createNewFile();
+		defaultConfig.deleteOnExit();
+		
 	}
 
 	@Override

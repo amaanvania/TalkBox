@@ -18,7 +18,9 @@ public class Utilities { //class for some helpful utilities with static methods
 	public static String defaultPath;
 	public static int numSeconds;
 	public static String recordedAudioPath;
+	public static String fileName;
 	public static String resourcePath = System.getProperty("user.home") + File.separatorChar + "TalkBoxData";
+	public static String logPath = System.getProperty("user.home") + File.separatorChar + "TalkBoxData" + File.separatorChar + "DataLogs" + File.separatorChar;
 
 	public static String fileChoose(Stage mainStage, boolean pick) { //method to prompt filechooser
 		FileChooser fileChooser = new FileChooser();
@@ -74,6 +76,8 @@ public class Utilities { //class for some helpful utilities with static methods
 		fileChooser.setInitialDirectory(new File(resourcePath));
 		File selectedFile = fileChooser.showSaveDialog(mainStage);
 		if (selectedFile != null) {
+			fileName = selectedFile.getName();
+			fileName = fileName.substring(0, fileName.lastIndexOf('.'));
 			return selectedFile;
 		}
 		return null;
@@ -139,4 +143,9 @@ public class Utilities { //class for some helpful utilities with static methods
 	public static int getNumSeconds(){
 		return numSeconds;
 	}
+	
+	public static String getFileName() {
+		return fileName;
+	}
 }
+
