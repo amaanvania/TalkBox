@@ -450,7 +450,7 @@ public class Builder extends Application implements TalkBoxConfiguration {
 					alert.setHeaderText("Warning! Null File");
 					alert.setContentText("Save file before attempting to Play");
 					alert.showAndWait();
-					logr.fine("TEST: " +  "failed simulator opening");
+					logr.fine("Error: " +  "failed simulator opening");
 					Stat.TestCounter++;
 				}
 			} catch (IOException z) {
@@ -801,7 +801,7 @@ public class Builder extends Application implements TalkBoxConfiguration {
 					Utilities.AudioPath = buttons.get(j).getAudioPath();
 					textField.setText(buttons.get(j).getName());
 					edit.setText(buttons.get(j).getName());
-					logr.fine("Autocomplete: button " + j + " autocompleted to " + buttons.get(j).getName());
+					logr.fine("Autofill: button " + j + " autofilled to " + buttons.get(j).getName());
 					Stat.AutofillAudioButtonCounter++;
 				} catch (Exception e2) {
 					e2.printStackTrace();

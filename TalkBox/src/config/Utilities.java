@@ -20,7 +20,7 @@ public class Utilities { //class for some helpful utilities with static methods
 	public static String recordedAudioPath;
 	public static String fileName;
 	public static String resourcePath = System.getProperty("user.home") + File.separatorChar + "TalkBoxData";
-	public static String logPath = System.getProperty("user.home") + File.separatorChar + "TalkBoxData" + File.separatorChar + "DataLogs" + File.separatorChar;
+	public static String logPath = System.getProperty("user.home") + File.separatorChar + "TalkBoxData" + File.separatorChar;
 
 	public static String fileChoose(Stage mainStage, boolean pick) { //method to prompt filechooser
 		FileChooser fileChooser = new FileChooser();
@@ -43,6 +43,19 @@ public class Utilities { //class for some helpful utilities with static methods
 	
 	public static File chooseFile(Stage mainStage) { //method to prompt filechooser
 		FileChooser fileChooser = new FileChooser();
+		new File(resourcePath).mkdirs();
+		fileChooser.setInitialDirectory(new File(resourcePath)); //initial dir is src/resources
+		File selectedFile = fileChooser.showOpenDialog(mainStage);
+		if (selectedFile != null) {
+			return selectedFile;
+		}
+		return null;
+	}
+	
+	public static File chooseLoggerFile(Stage mainStage) { //method to prompt filechooser
+		FileChooser fileChooser = new FileChooser();
+		FileChooser.ExtensionFilter extFilter = (new ExtensionFilter("Log files","*.log"));
+		fileChooser.getExtensionFilters().add(extFilter);
 		new File(resourcePath).mkdirs();
 		fileChooser.setInitialDirectory(new File(resourcePath)); //initial dir is src/resources
 		File selectedFile = fileChooser.showOpenDialog(mainStage);
