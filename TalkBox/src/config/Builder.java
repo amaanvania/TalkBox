@@ -65,6 +65,7 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 import log.Stat;
+import log.TBCLog;
 
 public class Builder extends Application implements TalkBoxConfiguration {
 	/**
@@ -335,12 +336,27 @@ public class Builder extends Application implements TalkBoxConfiguration {
 			log.fine("VOLUME: volume changed to " + vSlider.getValue());
 			Stat.VolumeCounter++;
 		});
+		
+		Menu logss = new Menu("Logs");
+		logss.setId("Logs");
+	    MenuItem simulator = new MenuItem("Simulator");
+	    simulator.setOnAction(e -> {
+	    	try {
+	    		TBCLog aa = new TBCLog();
+	    		aa.start(new Stage());
+	    	}
+	    	catch(Exception e1){
+	    		e1.printStackTrace();
+	    	}
+	    });
+	    logss.getItems().addAll(simulator);
+		
 		volumesOne.setContent(vSlider);
 		volumes.getItems().addAll(volumesOne);
 
 		MenuBar menuBar = new MenuBar();
 		menuBar.setId("Top-menu");
-		menuBar.getMenus().addAll(volumes, helps);
+		menuBar.getMenus().addAll(volumes, helps, logss);
 		return menuBar;
 	}
 	
