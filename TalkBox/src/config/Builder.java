@@ -339,7 +339,7 @@ public class Builder extends Application implements TalkBoxConfiguration {
 		
 		Menu logss = new Menu("Logs");
 		logss.setId("Logs");
-	    MenuItem simulator = new MenuItem("Simulator");
+	    MenuItem simulator = new MenuItem("Open the Logger");
 	    simulator.setOnAction(e -> {
 	    	try {
 	    		TBCLog aa = new TBCLog();

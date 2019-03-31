@@ -24,6 +24,14 @@
                         <Tooltip text="Open an existing Log file" />
                      </tooltip>
                   </Button>
+                  <Button fx:id="showstats" contentDisplay="CENTER" layoutX="10.0" layoutY="12.0" mnemonicParsing="false" onAction="#showStats" style="-fx-background-color: #0061ff;" text="Show Stats" textAlignment="CENTER" textFill="WHITE">
+                     <cursor>
+                        <Cursor fx:constant="HAND" />
+                     </cursor>
+                     <tooltip>
+                        <Tooltip text="Open an existing Log file" />
+                     </tooltip>
+                  </Button>
               </items>
             </ToolBar>
             <Label layoutX="12.0" layoutY="61.0" prefHeight="35.0" prefWidth="278.0" text="Your Activity Timeline:" textAlignment="CENTER">

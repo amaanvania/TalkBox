@@ -30,17 +30,16 @@ import javafx.stage.Stage;
 public class TBCLog extends Application{
 	
 	Stage primaryStage; // The main stage that runs the TBCLogger application
-	@FXML
-	Label label;
-	@FXML
-	Button openlog;
-	@FXML
-	ScrollPane scrollpane;
-	
 	File logFile;
 	ArrayList<String> listOfLines;
 	ArrayList<Label> listOfLabels;
 	VBox logPane;
+	
+	@FXML Label label;
+	@FXML Button openlog;
+	@FXML Button showstats;
+	@FXML ScrollPane scrollpane;
+	
 
 	public static void main(String[] args) {
 		launch(args);
@@ -86,9 +85,10 @@ public class TBCLog extends Application{
 			@SuppressWarnings("resource")
 			BufferedReader br = new BufferedReader(fr);
 			String currentLine;
-			listOfLines.add("Date             Time             Action");
+			listOfLines.add("Date               Time          Action");
 			while ((currentLine = br.readLine()) != null) {
-				String temp = currentLine.replaceFirst("T", "  ");
+				String temp = currentLine.replaceFirst("T", "    ");
+				temp = temp.replaceFirst("\\.\\d\\d\\d", "   ");
 				listOfLines.add(temp);
 			}
 		} catch (FileNotFoundException e) {
@@ -104,6 +104,15 @@ public class TBCLog extends Application{
 		lv.setOrientation(Orientation.VERTICAL);
 		lv.setPrefSize(874, 540);
 		scrollpane.setContent(lv);
+	}
+	
+	// Show the statistic window
+	@FXML
+	public void showStats() {
+		Stage st = new Stage();
+		Scene sc = new Scene(Stat.getStatWindow());
+		st.setScene(sc);
+		st.show();
 	}
 
 
