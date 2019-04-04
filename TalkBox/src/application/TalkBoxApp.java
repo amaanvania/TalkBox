@@ -347,14 +347,11 @@ public class TalkBoxApp extends Application {
 	}
 
 	@FXML
-	public void createNewTalkFileButton() {
+	public void createNewTalkFileButton() throws IOException {
 		try {
 			Builder config = new Builder();
 			Stage stage = new Stage();
-			FlowPane fp = config.buildWelcomeScreen(stage);
-			Scene scene = new Scene(fp, 310, 440);
-			stage.setScene(scene);
-			stage.show();
+			config.buildInitialGui(stage, config.pagination());
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
