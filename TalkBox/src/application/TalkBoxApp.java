@@ -131,7 +131,7 @@ public class TalkBoxApp extends Application {
 		appPane.setCenter(pagination());
 		appPane.setTop(topToolBar);
 		appPane.setBottom(botToolBar);
-		Scene scene = new Scene(appPane, 651, 510);
+		Scene scene = new Scene(appPane);
 		String css = this.getClass().getResource("/resources/buttonstyle.css").toExternalForm();
 		scene.getStylesheets().add(css);
 		primaryStage.setScene(scene);
@@ -246,9 +246,13 @@ public class TalkBoxApp extends Application {
 			k = (k >= builder.buttons.size() ? builder.buttons.size() - 1 : k);
 			int j = k;
 			ImageView stop = builder.buildStopImage();
+			stop.setFitWidth(150);
+			stop.setFitHeight(200);
 			stop.setDisable(true);
 			stop.setOpacity(0);
 			ImageView iv1 = builder.buildImageView();
+			iv1.setFitWidth(150);
+			iv1.setFitHeight(200);
 			iv1.setImage(new Image(new FileInputStream(builder.buttons.get(j).getImagePath())));
 			iv1.setOnMouseClicked(e -> {
 				builder.playSound(j,stop,iv1, logr, false);
