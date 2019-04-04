@@ -411,7 +411,7 @@ public class Builder extends Application implements TalkBoxConfiguration {
 																			// the
 																			// bot
 																			// Toolbar
-		Button play = playBtn();
+		Button play = playBtn(primaryStage);
 		Button save = saveBtn();
 		Button addNewButton = new Button("Add Button");
 		addNewButton.setOnAction(e -> addButtonHandle(primaryStage));
@@ -447,7 +447,7 @@ public class Builder extends Application implements TalkBoxConfiguration {
 	 * @param primaryStage
 	 * @return
 	 */
-	private Button playBtn() {
+	private Button playBtn(Stage primaryStage) {
 		Button play = new Button("Test"); // play button
 		play.setId("play-config");
 		play.setTooltip(new Tooltip("Click to Open this configuration in the TalkBox App"));
@@ -456,6 +456,7 @@ public class Builder extends Application implements TalkBoxConfiguration {
 				if (getSetButtons() > 0 && this.file != null) {
 					TalkBoxApp a = new TalkBoxApp(openSerializedFile(file));
 					a.buildApplication(new Stage());
+					primaryStage.close();
 					logr.fine("TEST: " + filename + " simulator being opened");
 					Stat.TestCounter++;
 				} else {

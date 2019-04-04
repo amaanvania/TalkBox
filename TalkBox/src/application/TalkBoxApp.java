@@ -69,7 +69,7 @@ public class TalkBoxApp extends Application {
 	public TalkBoxApp() {
 	}
 
-	public ToolBar buildBotToolbar() throws IOException { // method
+	public ToolBar buildBotToolbar(Stage primaryStage) throws IOException { // method
 		// which
 		// builds
 		// and
@@ -81,6 +81,7 @@ public class TalkBoxApp extends Application {
 		play.setOnAction(e -> {
 			try {
 				builder.buildInitialGui(new Stage(),builder.pagination());
+				primaryStage.close();
 			} catch (IOException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
@@ -124,7 +125,7 @@ public class TalkBoxApp extends Application {
 	}
 	
 	public void buildApplication(Stage primaryStage) throws IOException {
-		ToolBar botToolBar = buildBotToolbar();
+		ToolBar botToolBar = buildBotToolbar(primaryStage);
 		MenuBar topToolBar = builder.buildTopMenu(logr);
 		BorderPane appPane = new BorderPane();
 		appPane.setCenter(pagination());
