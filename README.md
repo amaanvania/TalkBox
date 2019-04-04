@@ -29,6 +29,13 @@ https://github.com/amaanvania/TalkBox/blob/master/Documentation/TalkBoxUserManua
 
 - Intuitive and easy to use interfaces
 
+- Multiple Page support
+
+-	AutoFill Audio Button functionality
+
+-	Log which displays statistics of your session.
+
+
 # Screenshots
 
 ## TalkBox Simulator Welcome Screen
