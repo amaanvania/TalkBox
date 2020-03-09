@@ -48,4 +48,4 @@ https://github.com/amaanvania/TalkBox/blob/master/Documentation/TalkBoxUserManua
 ![config screen](https://i.imgur.com/Vp1Pi6t.png)
 
 ## TalkBox Config App in action
-![https://imgur.com/uBwbJUV](https://i.imgur.com/uBwbJUV.png)
+![https://imgur.com/TgVY8st](https://imgur.com/TgVY8st.png)
