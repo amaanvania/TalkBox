@@ -1,5 +1,9 @@
 package config;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.json.simple.parser.JSONParser;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -11,6 +15,7 @@ import com.voicerss.tts.Languages;
 import com.voicerss.tts.VoiceParameters;
 import com.voicerss.tts.VoiceProvider;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -40,24 +45,26 @@ public class WebDownloader {
 
 	public static List<String> getImages(String topic) {
 		List<String> result = new ArrayList<String>();
-		topic.replaceAll(" ", "+");
+		topic.replaceAll(" ", "-");
 		try {
-			Document doc = Jsoup.connect("https://pixabay.com/images/search/" + topic + "/")
+			String url = "https://unsplash.com/s/photos/" + topic;
+			Document doc = Jsoup.connect(url)
 					.userAgent(
 							"Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36")
 					.get();
 
 			// Extract images from site
-			Elements elemImages = doc.select("img[src$=.jpg]");
+			Elements elemImages = doc.select("img");
 
-			for (Element e : elemImages)
-				result.add(e.absUrl("src"));
+			for (Element e : elemImages) {
+				if(!e.absUrl("src").contains("profile"))
+					result.add(e.absUrl("src"));
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return result;
 	}
-
 	public static String bestMatch(List<String> r, String topic) {
 		for (String s : r) {
 			if (s.contains(topic))
@@ -76,10 +83,11 @@ public class WebDownloader {
 
 		try {
 			// This will open a socket from client to server
+			//System.out.print("URL = " + search);
 			URL url = new URL(search);
 
 			// This user agent is for if the server wants real humans to visit
-			String USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.87 Safari/537.36";
+			String USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.132 Safari/537.36";
 
 			// This socket type will allow to set user_agent
 			URLConnection con = url.openConnection();
@@ -117,8 +125,7 @@ public class WebDownloader {
 	}
 
 	public static void downloadTTS(String input) throws Exception {
-		VoiceProvider tts = new VoiceProvider("1b8701f7a7424b24965bbc6428165b89");
-
+		VoiceProvider tts = new VoiceProvider("00e5216360fb4c8fad31c3219a84e390");
 		VoiceParameters params = new VoiceParameters(input, Languages.English_UnitedStates);
 		params.setCodec(AudioCodec.WAV);
 		params.setFormat(AudioFormat.Format_44KHZ.AF_44khz_16bit_stereo);
@@ -133,5 +140,6 @@ public class WebDownloader {
 		fos.flush();
 		fos.close();
 	}
+
 
 }
